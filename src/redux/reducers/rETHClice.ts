@@ -434,6 +434,9 @@ export const get_eth_getBalance =
     // console.log("------------------------------->");
     // console.log("ethereum.request result: ", result);
     // console.log("ethereum: ", ethereum);
+    if (!web3 || !web3.eth) {
+      return;
+    }
     var balance = await web3.eth.getBalance(address);
     console.log("web3 getBalance: ", balance);
 
