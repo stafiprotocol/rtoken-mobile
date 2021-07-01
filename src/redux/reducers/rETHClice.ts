@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 import Web3Utils from "web3-utils";
-import { isdev } from "../../config";
 import EthServer from "../../servers/eth";
 import {
   getLocalStorageItem,
@@ -14,7 +13,7 @@ import {
 import { numberUtil as NumberUtil } from "../../util/numberUtil";
 import { stringUtil as StringUtil } from "../../util/stringUtil";
 import { AppDispatch, AppThunk } from "../store";
-import { getAssetBalance, getAssetBalanceAll } from "./ETHClice";
+import { getAssetBalance } from "./ETHClice";
 import { setLoading } from "./globalClice";
 // import {
 //   add_Notice,
@@ -251,47 +250,6 @@ export const {
 declare const window: any;
 declare const ethereum: any;
 
-export const connectMetamask =
-  (chainId: string): AppThunk =>
-  async (dispatch, getState) => {
-    if (typeof window.ethereum !== "undefined" && ethereum.isMetaMask) {
-      ethereum.autoRefreshOnNetworkChange = false;
-
-      ethereum.request({ method: "eth_chainId" }).then((chainId: any) => {
-        if (isdev()) {
-          if (ethereum.chainId !== chainId) {
-            if (chainId === "0x3") {
-              message.warning("Please connect to Ropsten Test Network!");
-            }
-            if (chainId === "0x5") {
-              message.warning("Please connect to Goerli Test Network!");
-            }
-            return;
-          }
-        } else if (ethereum.chainId !== "0x1") {
-          message.warning("Please connect to Ethereum Main Network!");
-          return;
-        }
-
-        ethereum
-          .request({ method: "eth_requestAccounts" })
-          .then((accounts: any) => {
-            dispatch(handleEthAccount(accounts[0]));
-          })
-          .catch((error: any) => {
-            dispatch(setEthAccount(null));
-            if (error.code === 4001) {
-              message.error("Please connect to MetaMask.");
-            } else {
-              message.error("error.message");
-            }
-          });
-      });
-    } else {
-      message.warning("Please install MetaMask!");
-    }
-  };
-
 export const handleEthAccount =
   (address: string | null): AppThunk =>
   (dispatch: AppDispatch, getState) => {
@@ -310,55 +268,6 @@ export const handleEthAccount =
         message.error(error.message);
       });
   };
-
-export const monitoring_Method =
-  (): AppThunk => (dispatch: AppDispatch, getState) => {
-    const isload_monitoring = getState().rETHModule.isload_monitoring;
-
-    if (isload_monitoring) {
-      return;
-    }
-    if (typeof window.ethereum !== "undefined" && ethereum.isMetaMask) {
-      dispatch(setIsloadMonitoring(true));
-      ethereum.autoRefreshOnNetworkChange = false;
-      ethereum.on("accountsChanged", (accounts: any) => {
-        if (accounts.length > 0) {
-          dispatch(handleEthAccount(accounts[0]));
-
-          setTimeout(() => {
-            dispatch(getAssetBalanceAll());
-            dispatch(reloadData());
-          }, 20);
-        } else {
-          dispatch(handleEthAccount(null));
-        }
-      });
-
-      ethereum.on("chainChanged", (chainId: any) => {
-        if (isdev()) {
-          if (
-            ethereum.chainId !== "0x3" &&
-            window.location.pathname.includes("/rAsset/erc")
-          ) {
-            message.warning("Please connect to Ropsten Test Network!");
-            dispatch(setEthAccount(null));
-          }
-          if (
-            ethereum.chainId !== "0x5" &&
-            window.location.pathname.includes("/rETH")
-          ) {
-            message.warning("Please connect to Goerli Test Network!");
-            dispatch(setEthAccount(null));
-          }
-        } else if (ethereum.chainId !== "0x1") {
-          message.warning("Please connect to Ethereum Main Network!");
-
-          dispatch(setEthAccount(null));
-        }
-      });
-    }
-  };
-
 
 export const reloadData = (): AppThunk => async (dispatch, getState) => {
   dispatch(rTokenRate());
@@ -1146,98 +1055,6 @@ export const getUnmatchedETH = (): AppThunk => async (dispatch, getState) => {
   );
 };
 
-export const getPoolInfo =
-  (poolAddress: string): AppThunk =>
-  async (dispatch, getState) => {
-    dispatch(setStakingPoolDetail(null));
-    const currentAddress = getState().rETHModule.ethAccount.address;
-
-    let poolPubkey = localStorage_poolPubKey.getPoolPubKey(poolAddress);
-    if (poolPubkey) {
-      dispatch(getStakingPoolDetail(poolAddress, poolPubkey));
-      return;
-    }
-
-    let web3 = ethServer.getWeb3();
-    let contract = new web3.eth.Contract(
-      ethServer.getStafiStakingPoolManagerAbi(),
-      ethServer.getStafiStakingPoolManagerAddress(),
-      {
-        from: currentAddress,
-      }
-    );
-    const pubkey = await contract.methods
-      .getStakingPoolPubkey(poolAddress)
-      .call();
-    if (pubkey) {
-      localStorage_poolPubKey.setPoolPubKey(poolAddress, pubkey);
-      dispatch(getStakingPoolDetail(poolAddress, pubkey));
-    } else {
-      let poolContract = new web3.eth.Contract(
-        ethServer.getStafiStakingPoolAbi(),
-        poolAddress,
-        {
-          from: currentAddress,
-        }
-      );
-
-      const depositBalance = await poolContract.methods
-        .getUserDepositBalance()
-        .call();
-      if (depositBalance === 0) {
-        dispatch(
-          setStakingPoolDetail({
-            status: 0,
-            currentBalance: "8.00",
-            effectiveBalance: "8.00",
-          })
-        );
-      } else {
-        dispatch(
-          setStakingPoolDetail({
-            status: 0,
-            currentBalance: "32.00",
-            effectiveBalance: "32.00",
-          })
-        );
-      }
-    }
-  };
-
-export const getStakingPoolDetail =
-  (poolAddress: string, pubkey: any): AppThunk =>
-  async (dispatch, getState) => {
-    ethServer.getPoolInfo(poolAddress, pubkey).then((result) => {
-      if (result.status === "80000" && result.data) {
-        if (result.data.status !== 7) {
-          let detail: any = {};
-          detail.status = result.data.status;
-          detail.currentBalance = result.data.currentBalance;
-          detail.effectiveBalance = NumberUtil.handleEthGweiToFixed(
-            parseFloat(result.data.effectiveBalance)
-          );
-          detail.activationEligibilityEpoch =
-            result.data.activationeligibilityepoch;
-          detail.activationEpoch = result.data.activeSince;
-          detail.apr = result.data.apr + "%";
-
-          let income = result.data.income;
-          if (income && Array.isArray(income) && income.length > 0) {
-            detail.rewardDetails = income;
-          }
-          dispatch(setStakingPoolDetail(detail));
-        } else {
-          dispatch(
-            setStakingPoolDetail({
-              status: 1,
-              currentBalance: "32.00",
-              effectiveBalance: "32.00",
-            })
-          );
-        }
-      }
-    });
-  };
 
 export const getDepositAmount = (): AppThunk => async (dispatch, getState) => {
   const web3 = ethServer.getWeb3();
@@ -1284,77 +1101,4 @@ export const rewardDetails = [
   },
 ];
 
-//validator-Deposit
-
-// const add_ETH_Staker_stake_Notice =
-//   (uuid: string, amount: string, status: string, subData?: any): AppThunk =>
-//   async (dispatch, getState) => {
-//     // dispatch(
-//     //   add_ETH_Notice(
-//     //     uuid,
-//     //     noticeType.Staker,
-//     //     noticesubType.Stake,
-//     //     amount,
-//     //     status,
-//     //     subData
-//     //   )
-//     // );
-//   };
-// const add_ETH_validator_deposit_Notice =
-//   (uuid: string, amount: string, status: string, subData?: any): AppThunk =>
-//   async (dispatch, getState) => {
-//     // dispatch(
-//     //   add_ETH_Notice(
-//     //     uuid,
-//     //     noticeType.Validator,
-//     //     noticesubType.Deposit,
-//     //     amount,
-//     //     status,
-//     //     subData
-//     //   )
-//     // );
-//   };
-// const add_ETH_validator_stake_Notice =
-//   (uuid: string, status: string, subData?: any): AppThunk =>
-//   async (dispatch, getState) => {
-//     // dispatch(
-//     //   add_ETH_Notice(
-//     //     uuid,
-//     //     noticeType.Validator,
-//     //     noticesubType.Stake,
-//     //     "",
-//     //     status,
-//     //     subData
-//     //   )
-//     // );
-//   };
-// const add_ETH_validator_offboard_Notice =
-//   (uuid: string, status: string, subData?: any): AppThunk =>
-//   async (dispatch, getState) => {
-//     // dispatch(
-//     //   add_ETH_Notice(
-//     //     uuid,
-//     //     noticeType.Validator,
-//     //     noticesubType.Offboard,
-//     //     "",
-//     //     status,
-//     //     subData
-//     //   )
-//     // );
-//   };
-
-// const add_ETH_Notice =
-//   (
-//     uuid: string,
-//     type: string,
-//     subType: string,
-//     content: string,
-//     status: string,
-//     subData?: any
-//   ): AppThunk =>
-//   async (dispatch, getState) => {
-//     // dispatch(
-//     //   add_Notice(uuid, Symbol.Eth, type, subType, content, status, subData)
-//     // );
-//   };
 export default rETHClice.reducer;
