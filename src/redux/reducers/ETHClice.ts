@@ -161,25 +161,25 @@ export const getRFISErc20Allowance = (): AppThunk => (dispatch, getState) => {
   // }
 };
 
-const getErc20Allowance = async (
-  ethAddress: string,
-  getTokenAbi: string,
-  getTokenAddress: string,
-  cb?: Function
-) => {
-  // let web3 = ethServer.getWeb3();
-  // let contract = new web3.eth.Contract(getTokenAbi, getTokenAddress, {
-  //   from: ethAddress,
-  // });
-  // try {
-  //   const allowance = await contract.methods
-  //     .allowance(ethAddress, bridgeServer.getBridgeErc20HandlerAddress())
-  //     .call();
-  //   cb && cb(allowance);
-  // } catch (e: any) {
-  //   console.error(e);
-  // }
-};
+// const getErc20Allowance = async (
+//   ethAddress: string,
+//   getTokenAbi: string,
+//   getTokenAddress: string,
+//   cb?: Function
+// ) => {
+//   let web3 = ethServer.getWeb3();
+//   let contract = new web3.eth.Contract(getTokenAbi, getTokenAddress, {
+//     from: ethAddress,
+//   });
+//   try {
+//     const allowance = await contract.methods
+//       .allowance(ethAddress, bridgeServer.getBridgeErc20HandlerAddress())
+//       .call();
+//     cb && cb(allowance);
+//   } catch (e: any) {
+//     console.error(e);
+//   }
+// };
 
 export const clickSwapToErc20Link = (
   selectedToken: string,

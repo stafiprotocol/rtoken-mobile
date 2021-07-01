@@ -1,15 +1,15 @@
- import { message } from 'antd';
-import axios from 'axios';
-import { createBrowserHistory, createHashHistory } from 'history';
-import { includes } from 'lodash';
-import webConfig from '../config/index';
+import { message } from "antd";
+import axios from "axios";
+import { createBrowserHistory, createHashHistory } from "history";
+import { includes } from "lodash";
+import webConfig from "../config/index";
 let loadingTimer = null;
 const clearLoading = () => {
   clearTimeout(loadingTimer);
   //Toast.hide();
-}; 
+};
 
-export const baseName = '/';
+export const baseName = "/";
 export const history = createBrowserHistory({ baseName });
 export const hashHistory = createHashHistory({ baseName });
 /**
@@ -23,22 +23,18 @@ export const windowOpen = (...argu) => {
 export const scrollToTop = () => window.scrollTo(0, 0);
 export const closePage = () => {
   window.opener = null;
-  window.open('', '_self');
+  window.open("", "_self");
   window.close();
 };
 
- 
-  
-
 // the authorize algorithm goes here
-export const authorized = (allowed, currentRole) => includes(allowed, currentRole);
-
- 
+export const authorized = (allowed, currentRole) =>
+  includes(allowed, currentRole);
 
 const axiosInstance = axios.create({
   baseURL: window.location.origin,
   timeout: 500000,
-  // headers: {   },  
+  // headers: {   },
   //withCredentials: true,
   //responseType: 'json',
   // proxy: {
@@ -46,34 +42,25 @@ const axiosInstance = axios.create({
   //   port: 8888
   // }
 });
- 
-
- 
- 
- 
- 
- 
 
 export const toQueryParam = (queryParams) => {
   const params = new URLSearchParams();
   Object.keys(queryParams).forEach((key) => {
-    if (typeof queryParams[key] !== 'undefined' && queryParams[key] !== null) {
+    if (typeof queryParams[key] !== "undefined" && queryParams[key] !== null) {
       params.append(key, queryParams[key]);
     }
   });
   return params;
-}; 
+};
 export const GETWAY = `${webConfig.api()}/stafi/v1`;
- 
 
 const urlShim = (url) => {
   return `${GETWAY}/${url}`;
 };
- 
 
 axiosInstance.interceptors.request.use(
-  function (config) { 
-    let headers = Object.assign({}, config.headers,  );  
+  function (config) {
+    let headers = Object.assign({}, config.headers);
     return Object.assign({}, config, { headers });
   },
   function (error) {
@@ -84,12 +71,12 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   function (response) {
     // TODO:
-    // let refreshToken = response.headers['X-ACCESS-TOKEN']; 
-    // if (refreshToken) { 
+    // let refreshToken = response.headers['X-ACCESS-TOKEN'];
+    // if (refreshToken) {
     //   setSessionStorageItem('USER_TOKEN', refreshToken);
     // }
- 
-    if (response.data.code && response.data.code != "0") {
+
+    if (response.data.code && response.data.code !== "0") {
       message.error(response.data.message);
     }
     return response;
@@ -108,7 +95,6 @@ export const api = {
    * ...: responseType/
    */
   request: (argu) => {
-
     clearLoading();
     if (!argu.closeLoading) {
       loadingTimer = setTimeout(() => {
@@ -118,7 +104,7 @@ export const api = {
     let config = {};
     const { url, method, queryParams, data: res, ...rest } = argu;
     if (!argu.url) {
-      throw new Error('No request url');
+      throw new Error("No request url");
     } else {
       config.url = url;
     }
@@ -140,14 +126,17 @@ export const api = {
         if (config.isDownload) {
           try {
             const {
-              headers: { 'content-disposition': contentDisposition },
+              headers: { "content-disposition": contentDisposition },
             } = res;
             const downFileName = decodeURIComponent(
-              contentDisposition.match(/fileName[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1]
+              contentDisposition.match(
+                /fileName[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+              )[1]
             );
+            console.log("downFileName: ", downFileName);
             // setSessionStorageItem(POS_DOWNLOAD_FILE_NAME, downFileName);
           } catch (error) {
-            message.error('Request exception');
+            message.error("Request exception");
           }
         }
         return Promise.resolve(res.data);
@@ -160,7 +149,7 @@ export const api = {
           if (data && data.code === 401) {
             sessionStorage.clear();
             // window.location.href = PPN_LOGIN;
-            console.error('TODO: catch error');
+            console.error("TODO: catch error");
           }
           return Promise.reject(err);
         }
@@ -168,14 +157,15 @@ export const api = {
           const data = err.response.data;
           if (data && data.code === 401) {
             sessionStorage.clear();
-            console.error('TODO: catch error');
+            console.error("TODO: catch error");
           } else if (err.response && err.response.status === 500) {
-            message.error('Server exception, please contact administrator');
+            message.error("Server exception, please contact administrator");
           } else {
-            !argu.hideMsg && message.error((data && data.message) || 'internet error'); // TBD
+            !argu.hideMsg &&
+              message.error((data && data.message) || "internet error"); // TBD
           }
         } else {
-          message.error('The request timed out. Please try again later');
+          message.error("The request timed out. Please try again later");
         }
         return Promise.reject(err);
       });
@@ -192,7 +182,7 @@ export const api = {
   post: (url, data, config, queryParams = {}) => {
     return api.request({
       url: urlShim(url),
-      method: 'post',
+      method: "post",
       queryParams: queryParams,
       data: data,
       ...config,
@@ -202,7 +192,7 @@ export const api = {
   put: (url, data, config) => {
     return api.request({
       url: urlShim(url),
-      method: 'put',
+      method: "put",
       data: data,
       ...config,
     });
@@ -210,7 +200,7 @@ export const api = {
   patch: (url, data, config) => {
     return api.request({
       url: urlShim(url),
-      method: 'patch',
+      method: "patch",
       data: data,
       ...config,
     });
@@ -218,7 +208,7 @@ export const api = {
   delete: (url, data, config) => {
     return api.request({
       url: urlShim(url),
-      method: 'delete',
+      method: "delete",
       data: data,
       ...config,
     });
@@ -231,4 +221,3 @@ export const api = {
     });
   },
 };
-

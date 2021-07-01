@@ -11,16 +11,15 @@ import { numberUtil } from "../util/numberUtil";
 import { getRem } from "../util/remUtil";
 
 export default function Dashboard() {
-  const { balance, totalStakedAmount, stakerApr, ratio, tokenAmount } =
-    useAppSelector((state) => {
-      return {
-        balance: state.rETHModule.balance,
-        totalStakedAmount: state.rETHModule.totalStakedAmount,
-        stakerApr: state.rETHModule.stakerApr,
-        ratio: state.rETHModule.ratio,
-        tokenAmount: state.rETHModule.rethAmount,
-      };
-    });
+  const { stakerApr, ratio, tokenAmount } = useAppSelector((state) => {
+    return {
+      balance: state.rETHModule.balance,
+      totalStakedAmount: state.rETHModule.totalStakedAmount,
+      stakerApr: state.rETHModule.stakerApr,
+      ratio: state.rETHModule.ratio,
+      tokenAmount: state.rETHModule.rethAmount,
+    };
+  });
 
   const exchangeOnCurve = () => {};
 

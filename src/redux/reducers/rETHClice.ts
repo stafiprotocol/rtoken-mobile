@@ -1,4 +1,3 @@
-import { keccakAsHex } from "@polkadot/util-crypto";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 import Web3Utils from "web3-utils";
@@ -105,7 +104,7 @@ const rETHClice = createSlice({
         state.ethAccount = payload;
         removeLocalStorageItem(Keys.MetamaskAccountKey);
       } else {
-        if (state.ethAccount && state.ethAccount.address == payload.address) {
+        if (state.ethAccount && state.ethAccount.address === payload.address) {
           state.ethAccount = { ...state.ethAccount, ...payload };
           setLocalStorageItem(Keys.MetamaskAccountKey, {
             address: payload.address,
@@ -260,16 +259,16 @@ export const connectMetamask =
 
       ethereum.request({ method: "eth_chainId" }).then((chainId: any) => {
         if (isdev()) {
-          if (ethereum.chainId != chainId) {
-            if (chainId == "0x3") {
+          if (ethereum.chainId !== chainId) {
+            if (chainId === "0x3") {
               message.warning("Please connect to Ropsten Test Network!");
             }
-            if (chainId == "0x5") {
+            if (chainId === "0x5") {
               message.warning("Please connect to Goerli Test Network!");
             }
             return;
           }
-        } else if (ethereum.chainId != "0x1") {
+        } else if (ethereum.chainId !== "0x1") {
           message.warning("Please connect to Ethereum Main Network!");
           return;
         }
@@ -338,20 +337,20 @@ export const monitoring_Method =
       ethereum.on("chainChanged", (chainId: any) => {
         if (isdev()) {
           if (
-            ethereum.chainId != "0x3" &&
+            ethereum.chainId !== "0x3" &&
             window.location.pathname.includes("/rAsset/erc")
           ) {
             message.warning("Please connect to Ropsten Test Network!");
             dispatch(setEthAccount(null));
           }
           if (
-            ethereum.chainId != "0x5" &&
+            ethereum.chainId !== "0x5" &&
             window.location.pathname.includes("/rETH")
           ) {
             message.warning("Please connect to Goerli Test Network!");
             dispatch(setEthAccount(null));
           }
-        } else if (ethereum.chainId != "0x1") {
+        } else if (ethereum.chainId !== "0x1") {
           message.warning("Please connect to Ethereum Main Network!");
 
           dispatch(setEthAccount(null));
@@ -360,40 +359,6 @@ export const monitoring_Method =
     }
   };
 
-export const checkAddressChecksum = (address: string) => {
-  // Check each case
-  address = address.replace(/^0x/i, "");
-  var addressHash = keccakAsHex(address.toLowerCase()).substr(2);
-
-  for (var i = 0; i < 40; i++) {
-    // the nth letter should be uppercase if the nth digit of casemap is 1
-    if (
-      (parseInt(addressHash[i], 16) > 7 &&
-        address[i].toUpperCase() !== address[i]) ||
-      (parseInt(addressHash[i], 16) <= 7 &&
-        address[i].toLowerCase() !== address[i])
-    ) {
-      return false;
-    }
-  }
-  return true;
-};
-
-export const checkEthAddress = (address: string) => {
-  // check if it has the basic requirements of an address
-  if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
-    return false;
-    // If it's ALL lowercase or ALL upppercase
-  } else if (
-    /^(0x|0X)?[0-9a-f]{40}$/.test(address) ||
-    /^(0x|0X)?[0-9A-F]{40}$/.test(address)
-  ) {
-    return true;
-    // Otherwise check each case
-  } else {
-    return checkAddressChecksum(address);
-  }
-};
 
 export const reloadData = (): AppThunk => async (dispatch, getState) => {
   dispatch(rTokenRate());
@@ -497,7 +462,7 @@ export const getNextCapacity = (): AppThunk => async (dispatch, getState) => {
   } else {
     dispatch(setIsPoolWaiting(false));
     const result = await ethServer.getStakingPoolStatus();
-    if (result.status == "80000") {
+    if (result.status === "80000") {
       if (result.data) {
         if (result.data.stakeAmount) {
           const totalStakedAmount = NumberUtil.handleEthAmountToFixed(
@@ -512,7 +477,7 @@ export const getNextCapacity = (): AppThunk => async (dispatch, getState) => {
 
 export const getStakerApr = (): AppThunk => async (dispatch, getState) => {
   const result = await ethServer.getArp(1);
-  if (result.status == "80000") {
+  if (result.status === "80000") {
     if (result.data && result.data.stakerApr) {
       const apr = result.data.stakerApr + "%";
       dispatch(setStakerApr(apr));
@@ -522,7 +487,7 @@ export const getStakerApr = (): AppThunk => async (dispatch, getState) => {
 
 export const getValidatorApr = (): AppThunk => async (dispatch, getState) => {
   const result = await ethServer.getArp(2);
-  if (result.status == "80000") {
+  if (result.status === "80000") {
     if (result.data && result.data.validatorApr) {
       const apr = result.data.validatorApr + "%";
       dispatch(setValidatorApr(apr));
@@ -720,11 +685,11 @@ export const getNodeStakingPoolCount =
           .call();
         poolAddressItems.push(poolAddress);
         if (currentPool) {
-          if (currentPool == poolAddress) {
+          if (currentPool === poolAddress) {
             dispatch(handleCurrentPool(poolAddress));
             dispatch(setPoolAddress(poolAddress));
           }
-        } else if (index == poolCount - 1) {
+        } else if (index === poolCount - 1) {
           dispatch(setPoolAddress(poolAddress));
           dispatch(handleCurrentPool(poolAddress));
           localStorage_currentEthPool.setCurrentEthPool(
@@ -811,7 +776,7 @@ export const handleOffboard =
       message.warning("Tx is pending to be finalized, please check it later");
       dispatch(setLoading(false));
     }, 5 * 60 * 1000);
-    if (currentPoolStatus == 4) {
+    if (currentPoolStatus === 4) {
       try {
         const result = await poolContract.methods.close().send();
         dispatch(setLoading(false));
@@ -1009,9 +974,9 @@ export const getSelfDeposited = (): AppThunk => async (dispatch, getState) => {
         );
 
         const status = await poolContract.methods.getStatus().call();
-        if (status == 4) {
+        if (status === 4) {
           addressItems.some((item) => {
-            if (item.address.toLowerCase() == poolAddress.toLowerCase()) {
+            if (item.address.toLowerCase() === poolAddress.toLowerCase()) {
               item.status = 8;
               return true;
             }
@@ -1048,7 +1013,7 @@ export const updateStatus =
     cb: Function
   ): AppThunk =>
   async (dispatch, getState) => {
-    if (pubKeys.length == poolCount) {
+    if (pubKeys.length === poolCount) {
       let validPubKeys: any[] = [];
 
       pubKeys.forEach((pubkey) => {
@@ -1057,7 +1022,7 @@ export const updateStatus =
         }
       });
 
-      if (validPubKeys.length == 0) {
+      if (validPubKeys.length === 0) {
         addressItems.forEach((item) => {
           item.status = 7;
         });
@@ -1069,7 +1034,7 @@ export const updateStatus =
         pubkeyList: JSON.stringify(validPubKeys),
       });
 
-      if (result && result.status == "80000") {
+      if (result && result.status === "80000") {
         if (result.data) {
           let totalStakeAmount = 0;
           if (result.data.allStakeAmount) {
@@ -1084,7 +1049,7 @@ export const updateStatus =
             remoteDataItems.forEach((remoteItem: any) => {
               if (remoteItem.pubkey) {
                 map.set(pubKeyMap.get(remoteItem.pubkey), remoteItem);
-                if (remoteItem.status == 7) {
+                if (remoteItem.status === 7) {
                   totalStakeAmount = Number(totalStakeAmount) + 32;
                 }
               }
@@ -1095,7 +1060,7 @@ export const updateStatus =
               if (map.has(key)) {
                 return {
                   ...item,
-                  status: map.get(key).status == 7 ? 2 : map.get(key).status,
+                  status: map.get(key).status === 7 ? 2 : map.get(key).status,
                 };
               } else {
                 return { ...item, status: 7 };
@@ -1112,7 +1077,7 @@ export const updateStatus =
 export const getStakingPoolStatus =
   (): AppThunk => async (dispatch, getState) => {
     const result = await ethServer.getStakingPoolStatus();
-    if (result.status == "80000") {
+    if (result.status === "80000") {
       if (result.data) {
         if (result.data.stakeAmount) {
           const totalStakedAmount = NumberUtil.handleEthAmountToFixed(
@@ -1219,7 +1184,7 @@ export const getPoolInfo =
       const depositBalance = await poolContract.methods
         .getUserDepositBalance()
         .call();
-      if (depositBalance == 0) {
+      if (depositBalance === 0) {
         dispatch(
           setStakingPoolDetail({
             status: 0,
@@ -1243,8 +1208,8 @@ export const getStakingPoolDetail =
   (poolAddress: string, pubkey: any): AppThunk =>
   async (dispatch, getState) => {
     ethServer.getPoolInfo(poolAddress, pubkey).then((result) => {
-      if (result.status == "80000" && result.data) {
-        if (result.data.status != 7) {
+      if (result.status === "80000" && result.data) {
+        if (result.data.status !== 7) {
           let detail: any = {};
           detail.status = result.data.status;
           detail.currentBalance = result.data.currentBalance;
@@ -1321,75 +1286,75 @@ export const rewardDetails = [
 
 //validator-Deposit
 
-const add_ETH_Staker_stake_Notice =
-  (uuid: string, amount: string, status: string, subData?: any): AppThunk =>
-  async (dispatch, getState) => {
-    // dispatch(
-    //   add_ETH_Notice(
-    //     uuid,
-    //     noticeType.Staker,
-    //     noticesubType.Stake,
-    //     amount,
-    //     status,
-    //     subData
-    //   )
-    // );
-  };
-const add_ETH_validator_deposit_Notice =
-  (uuid: string, amount: string, status: string, subData?: any): AppThunk =>
-  async (dispatch, getState) => {
-    // dispatch(
-    //   add_ETH_Notice(
-    //     uuid,
-    //     noticeType.Validator,
-    //     noticesubType.Deposit,
-    //     amount,
-    //     status,
-    //     subData
-    //   )
-    // );
-  };
-const add_ETH_validator_stake_Notice =
-  (uuid: string, status: string, subData?: any): AppThunk =>
-  async (dispatch, getState) => {
-    // dispatch(
-    //   add_ETH_Notice(
-    //     uuid,
-    //     noticeType.Validator,
-    //     noticesubType.Stake,
-    //     "",
-    //     status,
-    //     subData
-    //   )
-    // );
-  };
-const add_ETH_validator_offboard_Notice =
-  (uuid: string, status: string, subData?: any): AppThunk =>
-  async (dispatch, getState) => {
-    // dispatch(
-    //   add_ETH_Notice(
-    //     uuid,
-    //     noticeType.Validator,
-    //     noticesubType.Offboard,
-    //     "",
-    //     status,
-    //     subData
-    //   )
-    // );
-  };
+// const add_ETH_Staker_stake_Notice =
+//   (uuid: string, amount: string, status: string, subData?: any): AppThunk =>
+//   async (dispatch, getState) => {
+//     // dispatch(
+//     //   add_ETH_Notice(
+//     //     uuid,
+//     //     noticeType.Staker,
+//     //     noticesubType.Stake,
+//     //     amount,
+//     //     status,
+//     //     subData
+//     //   )
+//     // );
+//   };
+// const add_ETH_validator_deposit_Notice =
+//   (uuid: string, amount: string, status: string, subData?: any): AppThunk =>
+//   async (dispatch, getState) => {
+//     // dispatch(
+//     //   add_ETH_Notice(
+//     //     uuid,
+//     //     noticeType.Validator,
+//     //     noticesubType.Deposit,
+//     //     amount,
+//     //     status,
+//     //     subData
+//     //   )
+//     // );
+//   };
+// const add_ETH_validator_stake_Notice =
+//   (uuid: string, status: string, subData?: any): AppThunk =>
+//   async (dispatch, getState) => {
+//     // dispatch(
+//     //   add_ETH_Notice(
+//     //     uuid,
+//     //     noticeType.Validator,
+//     //     noticesubType.Stake,
+//     //     "",
+//     //     status,
+//     //     subData
+//     //   )
+//     // );
+//   };
+// const add_ETH_validator_offboard_Notice =
+//   (uuid: string, status: string, subData?: any): AppThunk =>
+//   async (dispatch, getState) => {
+//     // dispatch(
+//     //   add_ETH_Notice(
+//     //     uuid,
+//     //     noticeType.Validator,
+//     //     noticesubType.Offboard,
+//     //     "",
+//     //     status,
+//     //     subData
+//     //   )
+//     // );
+//   };
 
-const add_ETH_Notice =
-  (
-    uuid: string,
-    type: string,
-    subType: string,
-    content: string,
-    status: string,
-    subData?: any
-  ): AppThunk =>
-  async (dispatch, getState) => {
-    // dispatch(
-    //   add_Notice(uuid, Symbol.Eth, type, subType, content, status, subData)
-    // );
-  };
+// const add_ETH_Notice =
+//   (
+//     uuid: string,
+//     type: string,
+//     subType: string,
+//     content: string,
+//     status: string,
+//     subData?: any
+//   ): AppThunk =>
+//   async (dispatch, getState) => {
+//     // dispatch(
+//     //   add_Notice(uuid, Symbol.Eth, type, subType, content, status, subData)
+//     // );
+//   };
 export default rETHClice.reducer;

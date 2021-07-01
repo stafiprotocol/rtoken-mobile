@@ -93,7 +93,7 @@ export const numberUtil = {
 
   // The return string contains 6 decimal places and 2 decimal places, including 0
   handleEthRoundToFixed(amount) {
-    if (amount == "--" || isNaN(amount)) {
+    if (amount === "--" || isNaN(amount)) {
       return "--";
     }
     return (Math.floor(amount * 100) / 100).toFixed(2);
@@ -111,7 +111,7 @@ export const numberUtil = {
 
   // The return string contains 6 decimal places, including 0
   handleFisAmountToFixed(amount) {
-    if (amount == "--") {
+    if (amount === "--") {
       return "--";
     }
     return (floor(amount * 1000000) / 1000000).toFixed(6) || "--";
@@ -119,7 +119,7 @@ export const numberUtil = {
 
   // The return string contains 6 decimal places, including 0
   handleFisRoundToFixed(amount) {
-    if (amount == "--") {
+    if (amount === "--") {
       return "--";
     }
     return (Math.round(amount * 100000000) / 100000000).toFixed(6) || "--";
@@ -148,7 +148,7 @@ export const numberUtil = {
 
   // The return string contains 4 decimal places, including 0
   handleAtomRoundToFixed(amount) {
-    if (amount == "--") {
+    if (amount === "--") {
       return "--";
     }
     return (Math.round(amount * 1000000) / 1000000).toFixed(4) || "--";
