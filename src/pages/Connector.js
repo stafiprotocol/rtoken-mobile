@@ -11,7 +11,7 @@ import { handleEthAccount } from "../redux/reducers/rETHClice";
 import { getRem } from "../util/remUtil";
 
 const injected = new InjectedConnector({
-  supportedChainIds: isdev
+  supportedChainIds: isdev()
     ? [
         5, // Goerli
         // 3, // Ropsten
@@ -59,6 +59,9 @@ export default function Connector(props) {
     // }
     try {
       if (active) return alert("Already linked");
+
+      console.log("isDev: ", isdev());
+
       await activate(injected, (walletError) => {
         if (walletError.message.includes("user_canceled")) {
           return message.error(

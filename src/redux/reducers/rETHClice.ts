@@ -288,6 +288,7 @@ export const reloadData = (): AppThunk => async (dispatch, getState) => {
   dispatch(getStakerApr());
   dispatch(getValidatorApr());
   dispatch(getNextCapacity());
+  dispatch(getStakingPoolStatus());
   dispatch(getPoolCount());
   dispatch(getRethAmount());
   dispatch(getNodeStakingPoolCount());
