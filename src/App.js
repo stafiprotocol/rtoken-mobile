@@ -15,7 +15,10 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import Dashboard from "./pages/Dashboard";
 import Stake from "./pages/Stake";
 import { handleEthAccount, reloadData } from "./redux/reducers/rETHClice";
+import EthServer from "./servers/eth";
 import { getRem } from "./util/remUtil";
+
+const ethServer = new EthServer();
 
 function App() {
   const { loading } = useAppSelector((state) => {
@@ -56,6 +59,8 @@ function AppContent() {
     account && appDispatch(handleEthAccount(account));
     // ethAccountAddress && appDispatch(reloadData());
     appDispatch(reloadData());
+
+    ethServer.checkSavedREthRecords();
   }, [history, appDispatch, ethAccountAddress, account]);
 
   return (

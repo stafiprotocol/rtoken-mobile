@@ -1,6 +1,7 @@
 import Web3 from "web3";
 import config from "../../config/index";
 import { desEcbEncrypt, generateUUID } from "../../util/commonUtil";
+import { LOCAL_STORAGE_RETH_RECORDS } from "../../util/constants";
 import { api } from "../../util/http";
 
 declare const window: any;
@@ -117,13 +118,57 @@ export default class Index {
     return api.post(url, pam);
   }
 
-  recordREthStake(source: any, txHash: any) {
+  async recordREthStake(source: any, txHash: any) {
     const requestId = generateUUID();
     console.log("recordREthStake: ", source, txHash, requestId);
-    const qStr = desEcbEncrypt(JSON.stringify({ source, txHash, requestId }));
-    console.log("qStr: ", qStr);
+
+    const records = this._getSavedREthRecords();
+    records.push({ source, txHash, requestId });
+    localStorage.setItem(LOCAL_STORAGE_RETH_RECORDS, JSON.stringify(records));
+
+    this._postREthRecords(records);
+  }
+
+  async checkSavedREthRecords() {
+    const records = this._getSavedREthRecords();
+    if (records && records.length > 0) {
+      this._postREthRecords(records);
+    }
+  }
+
+  _getSavedREthRecords() {
+    const savedStr = localStorage.getItem(LOCAL_STORAGE_RETH_RECORDS);
+    let records = [];
+    if (savedStr) {
+      records = JSON.parse(savedStr);
+    }
+    return records;
+  }
+
+  async _postREthRecords(records: any) {
+    const qStr = desEcbEncrypt(JSON.stringify(records));
+    // console.log("qStr: ", qStr);
 
     const url = "webapi/rtoken/reth";
-    return api.post(url, { qStr });
+    const result = await api.post(url, { qStr });
+
+    if (result.data && result.data.result === 1) {
+      localStorage.removeItem(LOCAL_STORAGE_RETH_RECORDS);
+    } else if (result.data && result.data.result === 2) {
+      let newRecords = [...records];
+      result.data.errorList &&
+        result.data.errorList.forEach((errorItem: any) => {
+          if (errorItem.result === 2) {
+            newRecords = newRecords.filter(
+              (item: any) => item.requestId !== errorItem.requestId
+            );
+          }
+        });
+
+      localStorage.setItem(
+        LOCAL_STORAGE_RETH_RECORDS,
+        JSON.stringify(newRecords)
+      );
+    }
   }
 }
