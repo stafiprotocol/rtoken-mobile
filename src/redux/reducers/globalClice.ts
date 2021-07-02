@@ -46,7 +46,7 @@ const globalClice = createSlice({
       // if(payload==false && state.timeOutFunc){
       //   clearTimeout(state.timeOutFunc);
       // }
-      if (state.processSlider != payload) {
+      if (state.processSlider !== payload) {
         state.processSlider = payload;
       }
     },

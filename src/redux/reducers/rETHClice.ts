@@ -259,7 +259,6 @@ export const {
   setEthAmount,
 } = rETHClice.actions;
 
-declare const window: any;
 declare const ethereum: any;
 
 export const handleEthAccount =
