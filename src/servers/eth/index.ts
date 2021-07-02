@@ -1,5 +1,6 @@
 import Web3 from "web3";
 import config from "../../config/index";
+import { desEcbEncrypt, generateUUID } from "../../util/commonUtil";
 import { api } from "../../util/http";
 
 declare const window: any;
@@ -106,14 +107,23 @@ export default class Index {
     return api.post(url, { arpType });
   }
 
+  getApy() {
+    const url = "webapi/rtoken/rethapy";
+    return api.get(url);
+  }
+
   getPoolist(pam: any) {
     const url = "webapi/reth/poolist";
     return api.post(url, pam);
   }
-}
 
-// export default{
-//   getWeb3,
-//   getRETHTokenAddress,
-//   getRETHTokenAbi
-// }
+  recordREthStake(source: any, txHash: any) {
+    const requestId = generateUUID();
+    console.log("recordREthStake: ", source, txHash, requestId);
+    const qStr = desEcbEncrypt(JSON.stringify({ source, txHash, requestId }));
+    console.log("qStr: ", qStr);
+
+    const url = "webapi/rtoken/reth";
+    return api.post(url, { qStr });
+  }
+}

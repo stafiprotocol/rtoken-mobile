@@ -16,7 +16,7 @@ export default function AppHeader(props) {
     };
   });
 
-  console.log("ethAccount: ", JSON.stringify(ethAccount));
+  // console.log("ethAccount: ", JSON.stringify(ethAccount));
 
   useEffect(() => {
     setIndex(location.pathname.includes("stake") ? 0 : 1);

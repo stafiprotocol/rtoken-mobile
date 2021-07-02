@@ -96,60 +96,11 @@ export const {
   setLoading,
 } = globalClice.actions;
 
-// export const connectPolkadotjs =
-//   (type: Symbol, cb?: Function): AppThunk =>
-//   async (dispatch, getState) => {
-//     const accounts: any = await polkadotServer.connectPolkadotjs();
-//     if (accounts) {
-//       //  dispatch(setAccounts(accounts));
-//       const dotKeyringInstance = keyring.init(type);
-//       const accountsList = accounts.map((element: any) => {
-//         const address = dotKeyringInstance.encodeAddress(
-//           dotKeyringInstance.decodeAddress(element.address)
-//         );
-//         return {
-//           name: element.meta.name,
-//           address: address,
-//           balance: "--",
-//         };
-//       });
-//       accountsList.forEach((account: any) => {
-//         dispatch(clice(type).createSubstrate(account));
-//       });
-//       cb && cb();
-//     }
-//   };
-
-// export const reloadData =
-//   (type: Symbol, cb?: Function): AppThunk =>
-//   async (dispatch, getState) => {
-//     dispatch(clice(type).reloadData());
-//     cb && cb();
-//   };
-
-// export const clice = (symbol: string) => {
-//   switch (symbol) {
-//     case Symbol.Xtz:
-//     case Symbol.Fis:
-//       return {
-//         createSubstrate: fisCreateSubstrate,
-//         reloadData: fisReloadData,
-//       };
-//     case Symbol.Kava:
-//     case Symbol.One:
-//     default:
-//       return {
-//         createSubstrate: fisCreateSubstrate,
-//         reloadData: fisReloadData,
-//       };
-//   }
-// };
-
 export const fetchStafiStakerApr =
   (cb?: Function): AppThunk =>
   async (dispatch, getState) => {
     const result = await Rpc.fetchStafiStakerApr({});
-    if (result.status == "80000") {
+    if (result.status === "80000") {
       if (result.data && result.data.apr) {
         const apr = result.data.apr + "%";
         dispatch(setStafiStakerApr(apr));

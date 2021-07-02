@@ -2,7 +2,6 @@ import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { message } from "antd";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import imtoken_logo from "../assets/imtoken_logo.svg";
 import { Text } from "../components/commonComponents";
@@ -26,7 +25,6 @@ const injected = new InjectedConnector({
 
 export default function Connector(props) {
   const { activate, active, account } = useWeb3React();
-  const history = useHistory();
 
   const appDispatch = useAppDispatch();
   const { ethAccountAddress } = useAppSelector((state) => {
@@ -35,6 +33,12 @@ export default function Connector(props) {
         state.rETHModule.ethAccount && state.rETHModule.ethAccount.address,
     };
   });
+
+  useEffect(() => {
+    if (!ethAccountAddress) {
+      clickConnect();
+    }
+  }, [!!ethAccountAddress]);
 
   useEffect(() => {
     console.log(
@@ -46,17 +50,13 @@ export default function Connector(props) {
     if (account) {
       appDispatch(handleEthAccount(account));
     }
-    if (ethAccountAddress) {
-      history.push("/stake");
-      return;
-    }
-  }, [appDispatch, history, active, account, ethAccountAddress]);
+  }, [appDispatch, active, account, ethAccountAddress]);
 
   const clickConnect = async () => {
-    if (!window.imToken) {
-      message.warn("Please open dapp in imToken wallet");
-      //   return;
-    }
+    // if (!window.imToken) {
+    //   message.warn("Please open dapp in imToken wallet");
+    //     return;
+    // }
     try {
       if (active) return alert("Already linked");
       await activate(injected, (walletError) => {
@@ -74,15 +74,13 @@ export default function Connector(props) {
   };
 
   return (
-    <div>
-      <ConnectButton onClick={clickConnect}>
-        <Icon src={imtoken_logo} />
+    <ConnectButton onClick={clickConnect}>
+      <Icon src={imtoken_logo} />
 
-        <Text size={getRem(50)} sameLineHeight left={getRem(40)}>
-          Connect to imToken wallet
-        </Text>
-      </ConnectButton>
-    </div>
+      <Text size={getRem(50)} sameLineHeight left={getRem(40)}>
+        Connect Wallet
+      </Text>
+    </ConnectButton>
   );
 }
 

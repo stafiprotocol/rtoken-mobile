@@ -12,7 +12,6 @@ import styled from "styled-components";
 import "./App.css";
 import AppHeader from "./components/AppHeader";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import Connector from "./pages/Connector";
 import Dashboard from "./pages/Dashboard";
 import Stake from "./pages/Stake";
 import { handleEthAccount, reloadData } from "./redux/reducers/rETHClice";
@@ -30,10 +29,6 @@ function App() {
       <Spin spinning={loading} size="large" tip="loading">
         <Container>
           <Switch>
-            <Route path="/connector">
-              <Connector />
-            </Route>
-
             <Route path="/">
               <AppContent />
             </Route>
@@ -58,12 +53,9 @@ function AppContent() {
   useEffect(() => {
     console.log("ethAccountAddress: ", ethAccountAddress);
     console.log("useWeb3React account: ", account);
-    if (!ethAccountAddress) {
-      history.push("/connector");
-      return;
-    }
     account && appDispatch(handleEthAccount(account));
-    ethAccountAddress && appDispatch(reloadData());
+    // ethAccountAddress && appDispatch(reloadData());
+    appDispatch(reloadData());
   }, [history, appDispatch, ethAccountAddress, account]);
 
   return (

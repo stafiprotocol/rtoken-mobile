@@ -32,6 +32,8 @@ type rETHState = {
   waitingStaked: string;
   totalStakedAmount: string;
   stakerApr: string;
+  ethApy: string;
+  fisApy: string;
   validatorApr: string;
   poolStakerApr: string;
   poolValidatorApr: string;
@@ -68,6 +70,8 @@ const initialState: rETHState = {
   waitingStaked: "--",
   totalStakedAmount: "--",
   stakerApr: "--",
+  ethApy: "--",
+  fisApy: "--",
   validatorApr: "--",
   poolStakerApr: "--",
   poolValidatorApr: "--",
@@ -133,6 +137,12 @@ const rETHClice = createSlice({
     },
     setStakerApr(state, { payload }: PayloadAction<any>) {
       state.stakerApr = payload;
+    },
+    setEthApy(state, { payload }: PayloadAction<any>) {
+      state.ethApy = payload;
+    },
+    setFisApy(state, { payload }: PayloadAction<any>) {
+      state.fisApy = payload;
     },
     setIsPoolWaiting(state, { payload }: PayloadAction<any>) {
       state.isPoolWaiting = payload;
@@ -220,6 +230,8 @@ export const {
   setWaitingStaked,
   setTotalStakedAmount,
   setStakerApr,
+  setEthApy,
+  setFisApy,
   setIsPoolWaiting,
   setPoolCount,
   setRethAmount,
@@ -287,6 +299,9 @@ export const reloadData = (): AppThunk => async (dispatch, getState) => {
 
 export const rTokenRate = (): AppThunk => async (dispatch, getState) => {
   let web3 = ethServer.getWeb3();
+  if (!web3) {
+    return;
+  }
   let contract = new web3.eth.Contract(
     ethServer.getRETHTokenAbi(),
     ethServer.getRETHTokenAddress()
@@ -299,20 +314,16 @@ export const rTokenRate = (): AppThunk => async (dispatch, getState) => {
 
 export const get_eth_getBalance =
   (): AppThunk => async (dispatch, getState) => {
+    if (!getState().rETHModule.ethAccount) {
+      return;
+    }
     let web3 = ethServer.getWeb3();
     const address = getState().rETHModule.ethAccount.address;
-    // const result = await ethereum.request({
-    //   method: "eth_getBalance",
-    //   params: [address, "latest"],
-    // });
-    // console.log("------------------------------->");
-    // console.log("ethereum.request result: ", result);
-    // console.log("ethereum: ", ethereum);
     if (!web3 || !web3.eth) {
       return;
     }
     var balance = await web3.eth.getBalance(address);
-    console.log("web3 getBalance: ", balance);
+    // console.log("web3 getBalance: ", balance);
 
     const balanceFromWei = web3.utils.fromWei(
       web3.utils.toBN(balance),
@@ -330,6 +341,9 @@ export const get_eth_getBalance =
   };
 
 export const getMinimumDeposit = (): AppThunk => async (dispatch, getState) => {
+  if (!getState().rETHModule.ethAccount) {
+    return;
+  }
   let web3 = ethServer.getWeb3();
   const address = getState().rETHModule.ethAccount.address;
   let userDepositContract = new web3.eth.Contract(
@@ -345,6 +359,9 @@ export const getMinimumDeposit = (): AppThunk => async (dispatch, getState) => {
 };
 
 export const getNextCapacity = (): AppThunk => async (dispatch, getState) => {
+  if (!getState().rETHModule.ethAccount) {
+    return;
+  }
   let web3 = ethServer.getWeb3();
   const address = getState().rETHModule.ethAccount.address;
   let poolQueueContract = new web3.eth.Contract(
@@ -385,11 +402,13 @@ export const getNextCapacity = (): AppThunk => async (dispatch, getState) => {
 };
 
 export const getStakerApr = (): AppThunk => async (dispatch, getState) => {
-  const result = await ethServer.getArp(1);
+  const result = await ethServer.getApy();
   if (result.status === "80000") {
-    if (result.data && result.data.stakerApr) {
-      const apr = result.data.stakerApr + "%";
-      dispatch(setStakerApr(apr));
+    if (result.data && result.data.ethApy) {
+      dispatch(setEthApy(result.data.ethApy));
+    }
+    if (result.data && result.data.fisApy) {
+      dispatch(setFisApy(result.data.fisApy));
     }
   }
 };
@@ -405,6 +424,9 @@ export const getValidatorApr = (): AppThunk => async (dispatch, getState) => {
 };
 
 export const getPoolCount = (): AppThunk => async (dispatch, getState) => {
+  if (!getState().rETHModule.ethAccount) {
+    return;
+  }
   let web3 = ethServer.getWeb3();
   const address = getState().rETHModule.ethAccount.address;
   let managerContract = new web3.eth.Contract(
@@ -439,24 +461,12 @@ export const send =
       const result = await contract.methods.deposit().send({ value: amount });
       clearTimeout(timeout);
       dispatch(setLoading(false));
+      // console.log("send result: ", JSON.stringify(result));
       if (result && result.status) {
         message.success("Deposit successfully");
-        // dispatch(
-        //   add_ETH_Staker_stake_Notice(
-        //     stafi_uuid(),
-        //     value.toString(),
-        //     noticeStatus.Confirmed
-        //   )
-        // );
+        ethServer.recordREthStake(address, result.transactionHash);
         cb && cb();
       } else {
-        // dispatch(
-        //   add_ETH_Staker_stake_Notice(
-        //     stafi_uuid(),
-        //     value.toString(),
-        //     noticeStatus.Error
-        //   )
-        // );
         message.error("Error! Please try again");
       }
     } catch (error) {
@@ -466,6 +476,9 @@ export const send =
   };
 
 export const getRethAmount = (): AppThunk => async (dispatch, getState) => {
+  if (!getState().rETHModule.ethAccount) {
+    return;
+  }
   const address = getState().rETHModule.ethAccount.address;
   getAssetBalance(
     address,
@@ -478,6 +491,9 @@ export const getRethAmount = (): AppThunk => async (dispatch, getState) => {
 };
 
 export const getDepositBalance = (): AppThunk => async (dispatch, getState) => {
+  if (!getState().rETHModule.ethAccount) {
+    return;
+  }
   const address = getState().rETHModule.ethAccount.address;
   let web3 = ethServer.getWeb3();
   let userDepositContract = new web3.eth.Contract(
@@ -571,6 +587,9 @@ export const handleDeposit =
 
 export const getNodeStakingPoolCount =
   (): AppThunk => async (dispatch, getState) => {
+    if (!getState().rETHModule.ethAccount) {
+      return;
+    }
     let web3 = ethServer.getWeb3();
     const currentAddress = getState().rETHModule.ethAccount.address;
     const poolAddressItems = [];
@@ -799,6 +818,9 @@ export const handleStake =
   };
 
 export const getSelfDeposited = (): AppThunk => async (dispatch, getState) => {
+  if (!getState().rETHModule.ethAccount) {
+    return;
+  }
   let web3 = ethServer.getWeb3();
   const currentAddress = getState().rETHModule.ethAccount.address;
   let contract = new web3.eth.Contract(
@@ -1054,7 +1076,6 @@ export const getUnmatchedETH = (): AppThunk => async (dispatch, getState) => {
     setPoolStatusUnmatchedETH(NumberUtil.handleEthAmountToFixed(unmatchedETH))
   );
 };
-
 
 export const getDepositAmount = (): AppThunk => async (dispatch, getState) => {
   const web3 = ethServer.getWeb3();

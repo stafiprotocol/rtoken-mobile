@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import apy from "../assets/apy.svg";
 import eth_reward from "../assets/eth_reward.svg";
@@ -11,17 +11,37 @@ import { numberUtil } from "../util/numberUtil";
 import { getRem } from "../util/remUtil";
 
 export default function Dashboard() {
-  const { stakerApr, ratio, tokenAmount } = useAppSelector((state) => {
+  const [totalApy, setTotalApy] = useState("--");
+
+  const { ethApy, fisApy, ratio, tokenAmount } = useAppSelector((state) => {
     return {
       balance: state.rETHModule.balance,
       totalStakedAmount: state.rETHModule.totalStakedAmount,
-      stakerApr: state.rETHModule.stakerApr,
+      ethApy: state.rETHModule.ethApy,
+      fisApy: state.rETHModule.fisApy,
       ratio: state.rETHModule.ratio,
       tokenAmount: state.rETHModule.rethAmount,
     };
   });
 
-  const exchangeOnCurve = () => {};
+  useEffect(() => {
+    let apy = 0.0;
+    if (ethApy && ethApy !== "--") {
+      apy += parseFloat(ethApy.replace("%", ""));
+    }
+    if (fisApy && fisApy !== "--") {
+      apy += parseFloat(fisApy.replace("%", ""));
+    }
+    if (apy > 0) {
+      setTotalApy(apy + "%");
+    } else {
+      setTotalApy("--");
+    }
+  }, [ethApy, fisApy]);
+
+  const exchangeOnCurve = () => {
+    window.location.href = "https://dao.curve.fi/";
+  };
 
   return (
     <Container>
@@ -72,7 +92,7 @@ export default function Dashboard() {
 
           <TextContainer>
             <Text color={"#00F3AB"} size={getRem(73)} sameLineHeight>
-              23%
+              {totalApy}
             </Text>
             <Text
               color={"#c4c4c4"}
@@ -80,7 +100,7 @@ export default function Dashboard() {
               sameLineHeight
               top={getRem(4)}
             >
-              12.1% FIS + {stakerApr} ETH
+              {fisApy} FIS + {ethApy} ETH
             </Text>
           </TextContainer>
         </HContainer>

@@ -126,3 +126,22 @@ export const localStorage_currentEthPool = {
     return getLocalStorageItem(Keys.rEthCurrentPoolPrefix + validatorAddress);
   },
 };
+
+export const generateUUID = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+export const desEcbEncrypt = (str: any) => {
+  var C = require("crypto-js"),
+    key = "unlocking liquidity of Staked";
+  var keyHex = C.enc.Utf8.parse(key);
+  const encrypted = C.DES.encrypt(str, keyHex, {
+    mode: C.mode.ECB,
+    padding: C.pad.Pkcs7,
+  });
+  return encrypted.toString();
+};

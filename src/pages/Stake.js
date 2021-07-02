@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { reloadData, send } from "../redux/reducers/rETHClice";
 import { ratioToAmount } from "../util/commonUtil";
 import { getRem } from "../util/remUtil";
+import Connector from "./Connector";
 
 export default function Stake() {
   const history = useHistory();
@@ -16,16 +17,24 @@ export default function Stake() {
   const [stakeDisabled, setStakeDisabled] = useState(true);
   const appDispatch = useAppDispatch();
 
-  const { balance, totalStakedAmount, stakerApr, ratio } = useAppSelector(
-    (state) => {
-      return {
-        balance: state.rETHModule.balance,
-        totalStakedAmount: state.rETHModule.totalStakedAmount,
-        stakerApr: state.rETHModule.stakerApr,
-        ratio: state.rETHModule.ratio,
-      };
-    }
-  );
+  const {
+    balance,
+    totalStakedAmount,
+    ethApy,
+    fisApy,
+    ratio,
+    ethAccountAddress,
+  } = useAppSelector((state) => {
+    return {
+      balance: state.rETHModule.balance,
+      totalStakedAmount: state.rETHModule.totalStakedAmount,
+      ethApy: state.rETHModule.ethApy,
+      fisApy: state.rETHModule.fisApy,
+      ratio: state.rETHModule.ratio,
+      ethAccountAddress:
+        state.rETHModule.ethAccount && state.rETHModule.ethAccount.address,
+    };
+  });
 
   useEffect(() => {
     setStakeDisabled(!stakeAmount);
@@ -60,7 +69,7 @@ export default function Stake() {
           placeholder="ETH AMOUNT"
           value={stakeAmount}
           //   maxInput={props.transferrableAmount}
-          maxInput={balance}
+          maxInput={balance === "--" ? 0 : balance}
           onChange={(e) => {
             setStakeAmount(e);
           }}
@@ -90,7 +99,7 @@ export default function Stake() {
           color={"#00F3AB"}
           top={getRem(4)}
         >
-          {stakerApr}
+          {ethApy}
         </Text>
 
         <Text
@@ -107,7 +116,7 @@ export default function Stake() {
           color={"#00F3AB"}
           top={getRem(4)}
         >
-          23.45%
+          {fisApy}
         </Text>
 
         <Text
@@ -127,12 +136,16 @@ export default function Stake() {
           {ratio === "--" ? "--" : ratioToAmount(stakeAmount, ratio)}
         </Text>
 
-        <CommonButton
-          text={"Stake"}
-          top={getRem(60)}
-          disabled={stakeDisabled}
-          onClick={stakeEth}
-        />
+        {ethAccountAddress ? (
+          <CommonButton
+            text={"Stake"}
+            top={getRem(60)}
+            disabled={stakeDisabled}
+            onClick={stakeEth}
+          />
+        ) : (
+          <Connector />
+        )}
       </CardContainer>
 
       <CardContainer
