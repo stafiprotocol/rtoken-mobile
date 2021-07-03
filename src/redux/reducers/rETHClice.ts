@@ -28,6 +28,8 @@ type rETHState = {
   ratio: string;
   ratioShow: string;
   balance: string;
+  balanceInWei: string;
+  gasPrice: string;
   minimumDeposit: string;
   waitingStaked: string;
   totalStakedAmount: string;
@@ -66,6 +68,8 @@ const initialState: rETHState = {
   ratio: "--",
   ratioShow: "--",
   balance: "--",
+  balanceInWei: "--",
+  gasPrice: "50",
   minimumDeposit: "--",
   waitingStaked: "--",
   totalStakedAmount: "--",
@@ -125,6 +129,12 @@ const rETHClice = createSlice({
     },
     setBalance(state, { payload }: PayloadAction<any>) {
       state.balance = payload;
+    },
+    setBalanceInWei(state, { payload }: PayloadAction<any>) {
+      state.balanceInWei = payload;
+    },
+    setGasPrice(state, { payload }: PayloadAction<any>) {
+      state.gasPrice = payload;
     },
     setMinimumDeposit(state, { payload }: PayloadAction<any>) {
       state.minimumDeposit = payload;
@@ -226,6 +236,8 @@ export const {
   setEthAccount,
   setRatio,
   setBalance,
+  setBalanceInWei,
+  setGasPrice,
   setMinimumDeposit,
   setWaitingStaked,
   setTotalStakedAmount,
@@ -283,6 +295,7 @@ export const handleEthAccount =
 export const reloadData = (): AppThunk => async (dispatch, getState) => {
   dispatch(rTokenRate());
   dispatch(get_eth_getBalance());
+  dispatch(get_eth_gasPrice());
   dispatch(getMinimumDeposit());
 
   dispatch(getStakerApr());
@@ -318,11 +331,13 @@ export const get_eth_getBalance =
       return;
     }
     let web3 = ethServer.getWeb3();
+    var BN = web3.utils.BN;
     const address = getState().rETHModule.ethAccount.address;
     if (!web3 || !web3.eth) {
       return;
     }
     var balance = await web3.eth.getBalance(address);
+    dispatch(setBalanceInWei(new BN(balance).toString()));
     // console.log("web3 getBalance: ", balance);
 
     const balanceFromWei = web3.utils.fromWei(
@@ -339,6 +354,15 @@ export const get_eth_getBalance =
 
     dispatch(setBalance(balanceFromWei));
   };
+export const get_eth_gasPrice = (): AppThunk => async (dispatch, getState) => {
+  let web3 = ethServer.getWeb3();
+  if (!web3 || !web3.eth) {
+    return;
+  }
+  var gasPrice = await web3.eth.getGasPrice();
+  // console.log("gasPrice----------------->", gasPrice);
+  dispatch(setGasPrice(gasPrice));
+};
 
 export const getMinimumDeposit = (): AppThunk => async (dispatch, getState) => {
   if (!getState().rETHModule.ethAccount) {

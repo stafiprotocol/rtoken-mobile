@@ -1,3 +1,4 @@
+import { message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
@@ -7,6 +8,7 @@ import { CardContainer, Text } from "../components/commonComponents";
 import AmountInput from "../components/input/AmountInput";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { reloadData, send } from "../redux/reducers/rETHClice";
+import EthServer from "../servers/eth";
 import { ratioToAmount } from "../util/commonUtil";
 import { numberUtil } from "../util/numberUtil";
 import { getRem } from "../util/remUtil";
@@ -14,12 +16,15 @@ import Connector from "./Connector";
 
 export default function Stake() {
   const history = useHistory();
+  const ethServer = new EthServer();
   const [stakeAmount, setStakeAmount] = useState("");
   const [stakeDisabled, setStakeDisabled] = useState(true);
   const appDispatch = useAppDispatch();
 
   const {
     balance,
+    balanceInWei,
+    gasPrice,
     totalStakedAmount,
     ethApy,
     fisApy,
@@ -28,6 +33,8 @@ export default function Stake() {
   } = useAppSelector((state) => {
     return {
       balance: state.rETHModule.balance,
+      balanceInWei: state.rETHModule.balanceInWei,
+      gasPrice: state.rETHModule.gasPrice,
       totalStakedAmount: state.rETHModule.totalStakedAmount,
       ethApy: state.rETHModule.ethApy,
       fisApy: state.rETHModule.fisApy,
@@ -40,6 +47,23 @@ export default function Stake() {
   useEffect(() => {
     setStakeDisabled(!stakeAmount);
   }, [stakeAmount]);
+
+  const setMax = () => {
+    if (balanceInWei === "--") {
+      return;
+    }
+    let web3 = ethServer.getWeb3();
+    var BN = web3.utils.BN;
+    if (new BN(balanceInWei).lt(new BN(gasPrice).mul(new BN(220000)))) {
+      message.warn("No enough balance to pay gas fee");
+      return;
+    }
+    const maxWithoutGasFee = web3.utils.fromWei(
+      new BN(balanceInWei).sub(new BN(gasPrice).mul(new BN(220000))),
+      "ether"
+    );
+    setStakeAmount(numberUtil.handleEthAmountToFixed(maxWithoutGasFee));
+  };
 
   const stakeEth = () => {
     appDispatch(
@@ -74,12 +98,7 @@ export default function Stake() {
           onChange={(e) => {
             setStakeAmount(e);
           }}
-          onClickMax={() => {
-            if (balance === "--") {
-              return;
-            }
-            setStakeAmount(numberUtil.handleEthAmountToFixed(balance));
-          }}
+          onClickMax={setMax}
           icon={eth}
         />
 
