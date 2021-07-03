@@ -273,9 +273,3 @@ const Divider = styled.div({
   marginTop: getRem(70),
   marginBottom: getRem(100),
 });
-
-const TextContainer = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-end",
-});

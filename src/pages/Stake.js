@@ -8,6 +8,7 @@ import AmountInput from "../components/input/AmountInput";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { reloadData, send } from "../redux/reducers/rETHClice";
 import { ratioToAmount } from "../util/commonUtil";
+import { numberUtil } from "../util/numberUtil";
 import { getRem } from "../util/remUtil";
 import Connector from "./Connector";
 
@@ -72,6 +73,12 @@ export default function Stake() {
           maxInput={balance === "--" ? 0 : balance}
           onChange={(e) => {
             setStakeAmount(e);
+          }}
+          onClickMax={() => {
+            if (balance === "--") {
+              return;
+            }
+            setStakeAmount(numberUtil.handleEthAmountToFixed(balance));
           }}
           icon={eth}
         />

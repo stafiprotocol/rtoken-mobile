@@ -2,6 +2,7 @@ import { Input, message } from "antd";
 import React from "react";
 import styled from "styled-components";
 import { getRem } from "../../util/remUtil";
+import { Text } from "../commonComponents";
 import "./index.scss";
 
 // type Props = {
@@ -15,6 +16,10 @@ import "./index.scss";
 // };
 
 export default function AmountInput(props) {
+  const clickMax = () => {
+    props.onClickMax && props.onClickMax();
+  };
+
   return (
     <Input
       className="amount_input ant-input-affix-wrapper"
@@ -40,6 +45,9 @@ export default function AmountInput(props) {
       suffix={
         <>
           <label className="input_unit">{props.unit}</label>
+          <Text right={getRem(15)} onClick={clickMax}>
+            Max
+          </Text>
           <Icon src={props.icon} alt={"icon"} />
         </>
       }

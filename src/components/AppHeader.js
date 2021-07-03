@@ -68,7 +68,7 @@ export default function AppHeader(props) {
           <Text
             size={getRem(24)}
             sameLineHeight
-            top={getRem(20)}
+            top={getRem(10)}
             bottom={getRem(5)}
           >
             {stringUtil.replacePkhRemain6(ethAccount.address, 6, 44)}
