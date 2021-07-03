@@ -40,12 +40,12 @@ export default function Dashboard() {
   }, [ethApy, fisApy]);
 
   const exchangeOnCurve = () => {
-    window.location.href = "https://dao.curve.fi/";
+    window.location.href = "https://curve.fi/reth";
   };
 
   return (
     <Container>
-      <Text size={getRem(97)} color={"#ffffff"} top={getRem(50)}>
+      <Text size={getRem(80)} color={"#ffffff"} top={getRem(50)} bold>
         Dashboard
       </Text>
 
@@ -55,80 +55,92 @@ export default function Dashboard() {
         right={getRem(60)}
         verticalPadding={getRem(60)}
       >
-        <HContainer alignStart left={getRem(60)} right={getRem(60)}>
-          <HContainer>
-            <Icon src={reth} />
-            <Text left={getRem(40)} size={getRem(73)} sameLineHeight>
-              rETH
-            </Text>
-          </HContainer>
+        <VContainer>
+          <HContainer left={getRem(60)} right={getRem(60)}>
+            <HContainer>
+              <Icon src={reth} />
+              <Text left={getRem(40)} size={getRem(60)} sameLineHeight bold>
+                rETH
+              </Text>
+            </HContainer>
 
-          <TextContainer>
-            <Text color={"#00F3AB"} size={getRem(73)} sameLineHeight>
+            <Text color={"#00F3AB"} size={getRem(60)} sameLineHeight bold>
               {tokenAmount === "--"
                 ? "--"
                 : numberUtil.handleFisAmountToFixed(tokenAmount)}
             </Text>
-            <Text
-              color={"#c4c4c4"}
-              size={getRem(36)}
-              sameLineHeight
-              top={getRem(4)}
-            >
-              Redeemable ETH : 0
-            </Text>
-          </TextContainer>
-        </HContainer>
+          </HContainer>
+
+          <Text
+            style={{ alignSelf: "flex-end" }}
+            color={"#c4c4c4"}
+            size={getRem(30)}
+            sameLineHeight
+            top={getRem(8)}
+            right={getRem(60)}
+          >
+            Redeemable ETH :{" "}
+            {tokenAmount === "--"
+              ? "--"
+              : numberUtil.handleFisAmountToFixed(tokenAmount * ratio)}
+          </Text>
+        </VContainer>
 
         <Divider />
 
-        <HContainer alignStart left={getRem(60)} right={getRem(60)}>
-          <HContainer>
-            <Icon src={apy} />
-            <Text left={getRem(40)} size={getRem(73)} sameLineHeight>
-              APY
-            </Text>
-          </HContainer>
+        <VContainer>
+          <HContainer left={getRem(60)} right={getRem(60)}>
+            <HContainer>
+              <Icon src={apy} />
+              <Text left={getRem(40)} size={getRem(60)} sameLineHeight bold>
+                APY
+              </Text>
+            </HContainer>
 
-          <TextContainer>
-            <Text color={"#00F3AB"} size={getRem(73)} sameLineHeight>
+            <Text color={"#00F3AB"} size={getRem(60)} sameLineHeight bold>
               {totalApy}
             </Text>
-            <Text
-              color={"#c4c4c4"}
-              size={getRem(36)}
-              sameLineHeight
-              top={getRem(4)}
-            >
-              {fisApy} FIS + {ethApy} ETH
-            </Text>
-          </TextContainer>
-        </HContainer>
+          </HContainer>
+
+          <Text
+            style={{ alignSelf: "flex-end" }}
+            color={"#c4c4c4"}
+            size={getRem(30)}
+            sameLineHeight
+            top={getRem(8)}
+            right={getRem(60)}
+          >
+            {fisApy} FIS + {ethApy} ETH
+          </Text>
+        </VContainer>
 
         <Divider />
 
-        <HContainer alignStart left={getRem(60)} right={getRem(60)}>
-          <HContainer>
-            <Icon src={eth_reward} />
-            <Text left={getRem(40)} size={getRem(73)} sameLineHeight>
-              Reward
+        <VContainer>
+          <HContainer left={getRem(60)} right={getRem(60)}>
+            <HContainer>
+              <Icon src={eth_reward} />
+              <Text left={getRem(40)} size={getRem(60)} sameLineHeight bold>
+                Reward
+              </Text>
+            </HContainer>
+
+            <Text color={"#00F3AB"} size={getRem(60)} sameLineHeight bold>
+              +0.032334 ETH
             </Text>
           </HContainer>
 
-          <TextContainer>
-            <Text color={"#00F3AB"} size={getRem(73)} sameLineHeight>
-              +0.032334 ETH
-            </Text>
-            <Text
-              color={"#c4c4c4"}
-              size={getRem(36)}
-              sameLineHeight
-              top={getRem(4)}
-            >
-              Reward of last era
-            </Text>
-          </TextContainer>
-        </HContainer>
+          <Text
+            style={{ alignSelf: "flex-end" }}
+            color={"#c4c4c4"}
+            size={getRem(30)}
+            sameLineHeight
+            top={getRem(4)}
+            right={getRem(60)}
+          >
+            Reward of last era
+          </Text>
+        </VContainer>
       </CardContainer>
 
       <CardContainer
@@ -137,24 +149,23 @@ export default function Dashboard() {
         right={getRem(60)}
         verticalPadding={getRem(60)}
       >
-        <HContainer alignStart left={getRem(60)} right={getRem(60)}>
-          <HContainer>
-            <Icon src={fis_reward} />
-            <Text left={getRem(40)} size={getRem(73)} sameLineHeight>
-              Reward
-            </Text>
-          </HContainer>
-
-          <TextContainer>
-            <Text color={"#00F3AB"} size={getRem(73)} sameLineHeight>
+        <VContainer>
+          <HContainer left={getRem(60)} right={getRem(60)}>
+            <HContainer>
+              <Icon src={fis_reward} />
+              <Text left={getRem(40)} size={getRem(60)} sameLineHeight bold>
+                Reward
+              </Text>
+            </HContainer>
+            <Text color={"#00F3AB"} size={getRem(60)} sameLineHeight bold>
               +0.032334 FIS
             </Text>
-          </TextContainer>
-        </HContainer>
+          </HContainer>
+        </VContainer>
       </CardContainer>
 
       <Text
-        size={getRem(44)}
+        size={getRem(36)}
         top={getRem(10)}
         left={getRem(60)}
         style={{ alignSelf: "flex-start" }}
@@ -170,10 +181,10 @@ export default function Dashboard() {
         verticalPadding={getRem(30)}
       >
         <HContainer>
-          <Text size={getRem(36)} sameLineHeight color={"#929292"}>
+          <Text size={getRem(30)} sameLineHeight color={"#929292"}>
             Staked ETH
           </Text>
-          <Text size={getRem(36)} sameLineHeight color={"#c4c4c4"}>
+          <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
             {tokenAmount === "--" || ratio === "--"
               ? "--"
               : numberUtil.handleFisAmountToFixed(tokenAmount * ratio)}{" "}
@@ -181,35 +192,35 @@ export default function Dashboard() {
           </Text>
         </HContainer>
 
-        <HContainer top={getRem(20)}>
-          <Text size={getRem(36)} sameLineHeight color={"#929292"}>
+        <HContainer top={getRem(30)}>
+          <Text size={getRem(30)} sameLineHeight color={"#929292"}>
             Unbonding ETH
           </Text>
-          <Text size={getRem(36)} sameLineHeight color={"#c4c4c4"}>
+          <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
             0 ETH
           </Text>
         </HContainer>
 
-        <HContainer top={getRem(20)}>
-          <Text size={getRem(36)} sameLineHeight color={"#929292"}>
+        <HContainer top={getRem(30)}>
+          <Text size={getRem(30)} sameLineHeight color={"#929292"}>
             Exchange Rate
           </Text>
-          <Text size={getRem(36)} sameLineHeight color={"#c4c4c4"}>
+          <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
             1rETH = {ratio}ETH
           </Text>
         </HContainer>
 
-        <HContainer top={getRem(20)}>
-          <Text size={getRem(36)} sameLineHeight color={"#929292"}>
+        <HContainer top={getRem(30)}>
+          <Text size={getRem(30)} sameLineHeight color={"#929292"}>
             Total Reward
           </Text>
-          <Text size={getRem(36)} sameLineHeight color={"#c4c4c4"}>
+          <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
             +9.00133 ETH
           </Text>
         </HContainer>
       </CardContainer>
 
-      <Text color={"#C4C4C4"} size={getRem(36)} top={getRem(100)}>
+      <Text color={"#C4C4C4"} size={getRem(30)} top={getRem(120)}>
         Redemption is not available on ETH2.0 Phase 1
       </Text>
 
@@ -236,6 +247,14 @@ const HContainer = styled.div((props) => ({
   flexDirection: "row",
   alignItems: props.alignStart ? "flex-start" : "center",
   justifyContent: "space-between",
+  marginTop: props.top,
+  marginLeft: props.left,
+  marginRight: props.right,
+}));
+
+const VContainer = styled.div((props) => ({
+  display: "flex",
+  flexDirection: "column",
   marginTop: props.top,
   marginLeft: props.left,
   marginRight: props.right,

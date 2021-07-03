@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { getRem } from "../util/remUtil";
+import { Text } from "./commonComponents";
 
 export default function CommonButton(props) {
   const handleClick = () => {
@@ -17,7 +18,9 @@ export default function CommonButton(props) {
       disabled={props.disabled}
       onClick={handleClick}
     >
-      {props.text}
+      <Text color={"#23292F"} size={getRem(48)} sameLineHeight bold>
+        {props.text}
+      </Text>
     </Button>
   );
 }
@@ -29,15 +32,10 @@ const Button = styled.div((props) => ({
   marginRight: props.right,
   opacity: props.disabled ? 0.5 : 1,
   height: getRem(120),
-  color: "#23292F",
-  fontSize: getRem(58),
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   alignSelf: "stretch",
   backgroundColor: "#00F3AB",
-  borderRadius: getRem(40),
-  borderColor: "#979797",
-  borderStyle: "solid",
-  borderWidth: getRem(2),
+  borderRadius: getRem(44),
 }));

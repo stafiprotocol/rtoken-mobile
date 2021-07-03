@@ -3,6 +3,7 @@ import { getRem } from "../util/remUtil";
 
 export const Text = styled.div((props) => ({
   fontSize: props.size,
+  fontFamily: props.bold ? "Helvetica-Bold" : "Helvetica",
   lineHeight: props.sameLineHeight ? props.size : "",
   color: props.color ? props.color : "#ffffff",
   marginTop: props.top,
@@ -24,6 +25,6 @@ export const CardContainer = styled.div((props) => ({
   backgroundColor: "#292F38",
   borderStyle: "solid",
   borderWidth: getRem(1),
-  borderColor: "#525252",
+  borderColor: "rgba(82,82,82,0.3)",
   borderRadius: getRem(15),
 }));

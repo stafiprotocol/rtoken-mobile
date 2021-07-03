@@ -51,10 +51,10 @@ export default function Stake() {
 
   return (
     <Container>
-      <Text size={getRem(97)} color={"#ffffff"} top={getRem(50)}>
+      <Text bold size={getRem(80)} color={"#ffffff"} top={getRem(50)}>
         Stake ETH Get rETH
       </Text>
-      <Text size={getRem(36)} color={"#c4c4c4"} top={getRem(4)}>
+      <Text size={getRem(30)} color={"#c4c4c4"} top={getRem(4)}>
         Liquify Your Staking ETH 2.0 while earning interests
       </Text>
 
@@ -86,7 +86,7 @@ export default function Stake() {
         </Text>
 
         <Text
-          size={getRem(44)}
+          size={getRem(36)}
           sameLineHeight
           color={"#ffffff"}
           top={getRem(80)}
@@ -94,7 +94,8 @@ export default function Stake() {
           ETH APR
         </Text>
         <Text
-          size={getRem(85)}
+          bold
+          size={getRem(70)}
           sameLineHeight
           color={"#00F3AB"}
           top={getRem(4)}
@@ -103,7 +104,7 @@ export default function Stake() {
         </Text>
 
         <Text
-          size={getRem(44)}
+          size={getRem(36)}
           sameLineHeight
           color={"#ffffff"}
           top={getRem(70)}
@@ -111,7 +112,8 @@ export default function Stake() {
           FIS APR
         </Text>
         <Text
-          size={getRem(85)}
+          bold
+          size={getRem(70)}
           sameLineHeight
           color={"#00F3AB"}
           top={getRem(4)}
@@ -120,7 +122,7 @@ export default function Stake() {
         </Text>
 
         <Text
-          size={getRem(44)}
+          size={getRem(36)}
           sameLineHeight
           color={"#ffffff"}
           top={getRem(70)}
@@ -128,7 +130,8 @@ export default function Stake() {
           You will receive rETH
         </Text>
         <Text
-          size={getRem(85)}
+          bold
+          size={getRem(70)}
           sameLineHeight
           color={"#00F3AB"}
           top={getRem(4)}
@@ -157,28 +160,28 @@ export default function Stake() {
         verticalPadding={getRem(30)}
       >
         <HContainer>
-          <Text size={getRem(36)} sameLineHeight color={"#929292"}>
+          <Text size={getRem(30)} sameLineHeight color={"#929292"}>
             Exchange Rate
           </Text>
-          <Text size={getRem(36)} sameLineHeight color={"#c4c4c4"}>
+          <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
             1rETH = {ratio}ETH
           </Text>
         </HContainer>
 
-        <HContainer top={getRem(20)}>
-          <Text size={getRem(36)} sameLineHeight color={"#929292"}>
+        <HContainer top={getRem(30)}>
+          <Text size={getRem(30)} sameLineHeight color={"#929292"}>
             Transaction Fee
           </Text>
-          <Text size={getRem(36)} sameLineHeight color={"#c4c4c4"}>
+          <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
             0.001 ETH
           </Text>
         </HContainer>
 
-        <HContainer top={getRem(20)}>
-          <Text size={getRem(36)} sameLineHeight color={"#929292"}>
+        <HContainer top={getRem(30)}>
+          <Text size={getRem(30)} sameLineHeight color={"#929292"}>
             Reward Fee
           </Text>
-          <Text size={getRem(36)} sameLineHeight color={"#c4c4c4"}>
+          <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
             10%
           </Text>
         </HContainer>

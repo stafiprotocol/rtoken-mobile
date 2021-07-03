@@ -26,17 +26,19 @@ $inputFontSize: 0.5rem;
 
 .amount_input,
 .amount_input:hover {
-  background: #2b3239;
+  background: #292f38;
   width: 100%;
   height: $inputHeight;
   padding-left: 0.35rem;
-  border-color: #b3b3b5;
+  border-color: #525252;
+  border-radius: 0.14rem;
   input,
   .ant-input-disabled {
-    background: #2b3239;
+    background: #292f38;
     color: #fff;
     font-size: $placeHolderFontSize;
     // font-weight: bold;
+    font-family: "Helvetica-Bold";
     margin-right: 10px;
   }
   .ant-input::-webkit-input-placeholder {
@@ -50,6 +52,13 @@ $inputFontSize: 0.5rem;
     }
   }
 }
+
+.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+  border-color: #525252;
+  border-radius: 0.14rem;
+  box-shadow: none;
+}
+
 .type_input {
   .ant-input-suffix {
     div {

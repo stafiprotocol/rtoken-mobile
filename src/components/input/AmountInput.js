@@ -17,7 +17,7 @@ import "./index.scss";
 export default function AmountInput(props) {
   return (
     <Input
-      className="amount_input"
+      className="amount_input ant-input-affix-wrapper"
       disabled={props.disabled}
       onChange={(e) => {
         let value = e.target.value.replace(/[^\d.]/g, "");
