@@ -2,9 +2,7 @@ import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { message } from "antd";
 import React, { useEffect } from "react";
-import styled from "styled-components";
-import imtoken_logo from "../assets/imtoken_logo.svg";
-import { Text } from "../components/commonComponents";
+import { AccountContainer, Text } from "../components/commonComponents";
 import { isdev } from "../config";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { handleEthAccount } from "../redux/reducers/rETHClice";
@@ -41,12 +39,12 @@ export default function Connector(props) {
   }, [!!ethAccountAddress]);
 
   useEffect(() => {
-    console.log(
-      "active account ethAccountAddress: ",
-      active,
-      account,
-      ethAccountAddress
-    );
+    // console.log(
+    //   "active account ethAccountAddress: ",
+    //   active,
+    //   account,
+    //   ethAccountAddress
+    // );
     if (account) {
       appDispatch(handleEthAccount(account));
     }
@@ -60,8 +58,6 @@ export default function Connector(props) {
     try {
       if (active) return alert("Already linked");
 
-      console.log("isDev: ", isdev());
-
       await activate(injected, (walletError) => {
         if (walletError.message.includes("user_canceled")) {
           return message.error(
@@ -71,39 +67,19 @@ export default function Connector(props) {
         message.error(`Failed to connect: ${walletError.message}`);
       });
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       message.error("Failed to connect Wallet.");
     }
   };
 
   return (
-    <ConnectButton onClick={clickConnect}>
-      <Icon src={imtoken_logo} />
-
-      <Text size={getRem(50)} sameLineHeight left={getRem(40)}>
-        Connect Wallet
+    <AccountContainer paddingHorizontal={getRem(40)} onClick={clickConnect}>
+      <Text size={getRem(30)} sameLineHeight>
+        Connect
       </Text>
-    </ConnectButton>
+      <Text size={getRem(30)} sameLineHeight top={getRem(10)}>
+        Wallet
+      </Text>
+    </AccountContainer>
   );
 }
-
-const ConnectButton = styled.div({
-  borderWidth: getRem(1),
-  borderColor: "#bfbfbf",
-  borderStyle: "solid",
-  borderRadius: getRem(10),
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  alignItems: "center",
-  paddingTop: getRem(20),
-  paddingBottom: getRem(20),
-  marginTop: getRem(250),
-  marginLeft: getRem(150),
-  marginRight: getRem(150),
-});
-
-const Icon = styled.img({
-  width: getRem(80),
-  height: getRem(80),
-});

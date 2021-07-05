@@ -99,23 +99,29 @@ export default class Index {
   }
 
   getStakingPoolStatus() {
-    const url = "webapi/reth/poolstatus";
+    const url = "v1/webapi/reth/poolstatus";
     return api.post(url);
   }
 
   getArp(arpType: number) {
-    const url = "webapi/reth/arp";
+    const url = "v1/webapi/reth/arp";
     return api.post(url, { arpType });
   }
 
   getApy() {
-    const url = "webapi/rtoken/rethapy";
+    const url = "v1/webapi/rtoken/rethapy";
     return api.get(url);
   }
 
   getPoolist(pam: any) {
-    const url = "webapi/reth/poolist";
+    const url = "v1/webapi/reth/poolist";
     return api.post(url, pam);
+  }
+
+  getEthReward(ethAddress: string) {
+    const source = ethAddress.toLowerCase();
+    const url = "https://test-rtoken-api2.stafi.io/stafi/appapi/rtoken/reward";
+    return api.post(url, { source, rSymbol: -1 });
   }
 
   async recordREthStake(source: any, txHash: any) {
@@ -149,7 +155,7 @@ export default class Index {
     const qStr = desEcbEncrypt(JSON.stringify(records));
     // console.log("qStr: ", qStr);
 
-    const url = "webapi/rtoken/reth";
+    const url = "v1/webapi/rtoken/reth";
     const result = await api.post(url, { qStr });
 
     if (result.data && result.data.result === 1) {

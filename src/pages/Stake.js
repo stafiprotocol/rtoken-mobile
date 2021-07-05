@@ -12,7 +12,6 @@ import EthServer from "../servers/eth";
 import { ratioToAmount } from "../util/commonUtil";
 import { numberUtil } from "../util/numberUtil";
 import { getRem } from "../util/remUtil";
-import Connector from "./Connector";
 
 export default function Stake() {
   const history = useHistory();
@@ -25,6 +24,7 @@ export default function Stake() {
     balance,
     balanceInWei,
     gasPrice,
+    minimumDeposit,
     totalStakedAmount,
     ethApy,
     fisApy,
@@ -35,6 +35,7 @@ export default function Stake() {
       balance: state.rETHModule.balance,
       balanceInWei: state.rETHModule.balanceInWei,
       gasPrice: state.rETHModule.gasPrice,
+      minimumDeposit: state.rETHModule.minimumDeposit,
       totalStakedAmount: state.rETHModule.totalStakedAmount,
       ethApy: state.rETHModule.ethApy,
       fisApy: state.rETHModule.fisApy,
@@ -80,7 +81,7 @@ export default function Stake() {
         Stake ETH Get rETH
       </Text>
       <Text size={getRem(30)} color={"#c4c4c4"} top={getRem(4)}>
-        Liquify Your Staking ETH 2.0 while earning interests
+        Liquify Your Staking ETH 2.0 While Earning Interests
       </Text>
 
       <CardContainer
@@ -95,6 +96,7 @@ export default function Stake() {
           value={stakeAmount}
           //   maxInput={props.transferrableAmount}
           maxInput={balance === "--" ? 0 : balance}
+          minInput={minimumDeposit === "--" ? 0 : minimumDeposit}
           onChange={(e) => {
             setStakeAmount(e);
           }}
@@ -165,15 +167,13 @@ export default function Stake() {
           {ratio === "--" ? "--" : ratioToAmount(stakeAmount, ratio)}
         </Text>
 
-        {ethAccountAddress ? (
+        {ethAccountAddress && (
           <CommonButton
             text={"Stake"}
             top={getRem(60)}
             disabled={stakeDisabled}
             onClick={stakeEth}
           />
-        ) : (
-          <Connector />
         )}
       </CardContainer>
 

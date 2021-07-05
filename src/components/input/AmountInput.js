@@ -36,6 +36,14 @@ export default function AmountInput(props) {
         if (Number(value) > Number(props.maxInput)) {
           message.error("The input amount exceeds your transferrable balance");
           props.onChange && props.onChange("");
+        } else if (
+          Number(value) > 0 &&
+          Number(value) < Number(props.minInput)
+        ) {
+          message.error(
+            `The deposited amount is less than the minimum deposit size: ${props.minInput}`
+          );
+          props.onChange && props.onChange("");
         } else {
           props.onChange && props.onChange(value);
         }

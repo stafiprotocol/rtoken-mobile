@@ -3,9 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import StafiLogo from "../assets/stafi_logo.svg";
 import { useAppSelector } from "../hooks";
+import Connector from "../pages/Connector";
 import { getRem } from "../util/remUtil";
 import { stringUtil } from "../util/stringUtil";
-import { Text } from "./commonComponents";
+import { AccountContainer, Text } from "./commonComponents";
 
 export default function AppHeader(props) {
   const location = useLocation();
@@ -60,20 +61,17 @@ export default function AppHeader(props) {
         </Link>
       </LeftContent>
 
-      {ethAccount && (
-        <AccountContainer onClick={clickAccount}>
-          <Text size={getRem(30)} bold sameLineHeight top={getRem(10)}>
+      {ethAccount && ethAccount.address ? (
+        <AccountContainer paddingHorizontal={getRem(15)} onClick={clickAccount}>
+          <Text size={getRem(30)} bold sameLineHeight>
             {ethAccount.balance} ETH
           </Text>
-          <Text
-            size={getRem(24)}
-            sameLineHeight
-            top={getRem(10)}
-            bottom={getRem(5)}
-          >
+          <Text size={getRem(24)} sameLineHeight top={getRem(10)}>
             {stringUtil.replacePkhRemain6(ethAccount.address, 6, 44)}
           </Text>
         </AccountContainer>
+      ) : (
+        <Connector />
       )}
     </Container>
   );
@@ -111,17 +109,3 @@ const IndicatorContainer = styled.div((props) => ({
   borderBottomStyle: "solid",
   boxSizing: "border-box",
 }));
-
-const AccountContainer = styled.div({
-  backgroundImage: "linear-gradient(to right, #3dddc4, #37bfa5, #00eba2)",
-  color: "#ffffff",
-  paddingLeft: getRem(15),
-  paddingRight: getRem(15),
-  paddingTop: getRem(4),
-  paddingBottom: getRem(4),
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-  alignItems: "center",
-  borderRadius: getRem(10),
-});

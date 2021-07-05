@@ -13,7 +13,14 @@ import { getRem } from "../util/remUtil";
 export default function Dashboard() {
   const [totalApy, setTotalApy] = useState("--");
 
-  const { ethApy, fisApy, ratio, tokenAmount } = useAppSelector((state) => {
+  const {
+    ethApy,
+    fisApy,
+    ratio,
+    tokenAmount,
+    lastEraReward,
+    latestMonthReward,
+  } = useAppSelector((state) => {
     return {
       balance: state.rETHModule.balance,
       totalStakedAmount: state.rETHModule.totalStakedAmount,
@@ -21,6 +28,8 @@ export default function Dashboard() {
       fisApy: state.rETHModule.fisApy,
       ratio: state.rETHModule.ratio,
       tokenAmount: state.rETHModule.rethAmount,
+      lastEraReward: state.rETHModule.lastEraReward,
+      latestMonthReward: state.rETHModule.latestMonthReward,
     };
   });
 
@@ -126,7 +135,7 @@ export default function Dashboard() {
             </HContainer>
 
             <Text color={"#00F3AB"} size={getRem(60)} sameLineHeight bold>
-              +0.032334 ETH
+              {lastEraReward} ETH
             </Text>
           </HContainer>
 
@@ -212,10 +221,10 @@ export default function Dashboard() {
 
         <HContainer top={getRem(30)}>
           <Text size={getRem(30)} sameLineHeight color={"#929292"}>
-            Total Reward
+            Total Reward of last 1 month
           </Text>
           <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
-            +9.00133 ETH
+            {latestMonthReward} ETH
           </Text>
         </HContainer>
       </CardContainer>

@@ -60,6 +60,8 @@ type rETHState = {
   stakingPoolDetail: any;
   runCount: number;
   ethAmount: number;
+  lastEraReward: string;
+  latestMonthReward: string;
 };
 
 const initialState: rETHState = {
@@ -100,6 +102,8 @@ const initialState: rETHState = {
   stakingPoolDetail: null,
   runCount: 0,
   ethAmount: 4,
+  lastEraReward: "--",
+  latestMonthReward: "--",
 };
 
 const rETHClice = createSlice({
@@ -229,6 +233,12 @@ const rETHClice = createSlice({
     setEthAmount(state, { payload }: PayloadAction<any>) {
       state.ethAmount = payload;
     },
+    setLastEraReward(state, { payload }: PayloadAction<any>) {
+      state.lastEraReward = payload;
+    },
+    setLatestMonthReward(state, { payload }: PayloadAction<any>) {
+      state.latestMonthReward = payload;
+    },
   },
 });
 
@@ -269,6 +279,8 @@ export const {
   setStakingPoolDetail,
   setRunCount,
   setEthAmount,
+  setLastEraReward,
+  setLatestMonthReward,
 } = rETHClice.actions;
 
 declare const ethereum: any;
@@ -299,6 +311,7 @@ export const reloadData = (): AppThunk => async (dispatch, getState) => {
   dispatch(getMinimumDeposit());
 
   dispatch(getStakerApr());
+  dispatch(getReward());
   dispatch(getValidatorApr());
   dispatch(getNextCapacity());
   dispatch(getStakingPoolStatus());
@@ -378,7 +391,8 @@ export const getMinimumDeposit = (): AppThunk => async (dispatch, getState) => {
     }
   );
   const result = await userDepositContract.methods.getMinimumDeposit().call();
-  const minimumDeposit = web3.utils.fromWei(result.toString(), "ether");
+  const minimumDeposit = web3.utils.fromWei(web3.utils.toBN(result), "ether");
+  // console.log("minimumDeposit: ", minimumDeposit);
   dispatch(setMinimumDeposit(minimumDeposit));
 };
 
@@ -433,6 +447,33 @@ export const getStakerApr = (): AppThunk => async (dispatch, getState) => {
     }
     if (result.data && result.data.fisApy) {
       dispatch(setFisApy(result.data.fisApy));
+    }
+  }
+};
+
+export const getReward = (): AppThunk => async (dispatch, getState) => {
+  if (!getState().rETHModule.ethAccount) {
+    return;
+  }
+  const result = await ethServer.getEthReward(
+    getState().rETHModule.ethAccount.address
+  );
+  if (result.message === "success") {
+    if (result.data && result.data.lastEraReward) {
+      dispatch(
+        setLastEraReward(
+          NumberUtil.handleEthAmountToFixed(
+            result.data.lastEraReward.toString()
+          )
+        )
+      );
+    }
+    if (result.data && result.data.latestMonthReward >= 0) {
+      dispatch(
+        setLatestMonthReward(
+          NumberUtil.handleEthAmountToFixed(result.data.latestMonthReward)
+        )
+      );
     }
   }
 };

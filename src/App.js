@@ -9,7 +9,7 @@ import {
   useHistory
 } from "react-router-dom";
 import styled from "styled-components";
-import "./App.css";
+import "./App.scss";
 import AppHeader from "./components/AppHeader";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import Dashboard from "./pages/Dashboard";
@@ -29,7 +29,12 @@ function App() {
 
   return (
     <Router>
-      <Spin spinning={loading} size="large" tip="loading">
+      <Spin
+        spinning={loading}
+        size="large"
+        tip="loading"
+        className={"ant-spin"}
+      >
         <Container>
           <Switch>
             <Route path="/">
@@ -54,8 +59,8 @@ function AppContent() {
   });
 
   useEffect(() => {
-    console.log("ethAccountAddress: ", ethAccountAddress);
-    console.log("useWeb3React account: ", account);
+    // console.log("ethAccountAddress: ", ethAccountAddress);
+    // console.log("useWeb3React account: ", account);
     account && appDispatch(handleEthAccount(account));
     // ethAccountAddress && appDispatch(reloadData());
     appDispatch(reloadData());

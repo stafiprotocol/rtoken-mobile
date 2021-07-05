@@ -28,3 +28,17 @@ export const CardContainer = styled.div((props) => ({
   borderColor: "rgba(82,82,82,0.3)",
   borderRadius: getRem(15),
 }));
+
+export const AccountContainer = styled.div((props) => ({
+  paddingLeft: props.paddingHorizontal,
+  paddingRight: props.paddingHorizontal,
+  backgroundImage: "linear-gradient(to right, #3dddc4, #37bfa5, #00eba2)",
+  color: "#ffffff",
+  paddingTop: getRem(15),
+  paddingBottom: getRem(10),
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  alignItems: "center",
+  borderRadius: getRem(10),
+}));
