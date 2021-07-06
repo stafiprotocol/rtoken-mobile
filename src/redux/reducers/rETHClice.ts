@@ -459,19 +459,26 @@ export const getReward = (): AppThunk => async (dispatch, getState) => {
     getState().rETHModule.ethAccount.address
   );
   if (result.message === "success") {
-    if (result.data && result.data.lastEraReward) {
+    let web3 = ethServer.getWeb3();
+    if (result.data && result.data.lastEraReward != null) {
+      const lastEraRewardFromWei = web3.utils.fromWei(
+        web3.utils.toBN(result.data.lastEraReward),
+        "ether"
+      );
       dispatch(
         setLastEraReward(
-          NumberUtil.handleEthAmountToFixed(
-            result.data.lastEraReward.toString()
-          )
+          NumberUtil.handleEthAmountToFixed(lastEraRewardFromWei)
         )
       );
     }
-    if (result.data && result.data.latestMonthReward >= 0) {
+    if (result.data && result.data.latestMonthReward != null) {
+      const latestMonthRewardFromWei = web3.utils.fromWei(
+        web3.utils.toBN(result.data.latestMonthReward),
+        "ether"
+      );
       dispatch(
         setLatestMonthReward(
-          NumberUtil.handleEthAmountToFixed(result.data.latestMonthReward)
+          NumberUtil.handleEthAmountToFixed(latestMonthRewardFromWei)
         )
       );
     }

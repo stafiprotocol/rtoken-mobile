@@ -33,7 +33,6 @@ function App() {
         spinning={loading}
         size="large"
         tip="loading"
-        className={"ant-spin"}
       >
         <Container>
           <Switch>

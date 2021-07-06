@@ -8,3 +8,12 @@
     color: #ffffff;
   }
 }
+
+.ant-spin-blur {
+  opacity: 1;
+}
+
+.ant-spin-container::after {
+  background-color: rgba($color: #ffffff, $alpha: 0.8);
+  z-index: 100;
+}

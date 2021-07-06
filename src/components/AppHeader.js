@@ -95,8 +95,8 @@ const LeftContent = styled.div({
 });
 
 const Logo = styled.img({
-  width: getRem(213),
-  height: getRem(82),
+  width: getRem(171),
+  height: getRem(65),
 });
 
 const IndicatorContainer = styled.div((props) => ({
