@@ -120,7 +120,7 @@ export default class Index {
 
   getEthReward(ethAddress: string) {
     const source = ethAddress.toLowerCase();
-    const url = "https://test-rtoken-api2.stafi.io/stafi/appapi/rtoken/reward";
+    const url = config.api2() + "/stafi/appapi/rtoken/reward";
     return api.post(url, { source, rSymbol: -1 });
   }
 

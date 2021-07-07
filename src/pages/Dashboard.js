@@ -214,7 +214,7 @@ export default function Dashboard() {
             Exchange Rate
           </Text>
           <Text size={getRem(30)} sameLineHeight color={"#c4c4c4"}>
-            1rETH = {ratio}ETH
+            1rETH = {numberUtil.handleEthAmountToFixed(ratio)}ETH
           </Text>
         </HContainer>
 

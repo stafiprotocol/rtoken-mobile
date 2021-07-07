@@ -11,6 +11,13 @@ const Config = {
       return "https://rtoken-api.stafi.io";
     }
   },
+  api2:()=>{
+    if (!isdev()) {
+      return "https://rtoken-api2.stafi.io";
+    } else {
+      return "https://test-rtoken-api2.stafi.io";
+    }
+  },
   stafiApi: "https://drop.stafi.io",
   rETHTokenAddress: () => {
     if (!isdev()) {
