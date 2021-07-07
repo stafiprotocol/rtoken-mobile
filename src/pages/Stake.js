@@ -27,7 +27,7 @@ export default function Stake() {
     minimumDeposit,
     totalStakedAmount,
     ethApy,
-    fisApy,
+    // fisApy,
     ratio,
     ethAccountAddress,
   } = useAppSelector((state) => {
@@ -131,7 +131,7 @@ export default function Stake() {
           {ethApy}
         </Text>
 
-        <Text
+        {/* <Text
           size={getRem(36)}
           sameLineHeight
           color={"#ffffff"}
@@ -147,7 +147,7 @@ export default function Stake() {
           top={getRem(4)}
         >
           {fisApy}
-        </Text>
+        </Text> */}
 
         <Text
           size={getRem(36)}

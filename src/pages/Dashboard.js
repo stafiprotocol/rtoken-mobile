@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import apy from "../assets/apy.svg";
 import eth_reward from "../assets/eth_reward.svg";
-import fis_reward from "../assets/fis_reward.svg";
 import reth from "../assets/reth.svg";
 import CommonButton from "../components/CommonButton";
 import { CardContainer, Text } from "../components/commonComponents";
@@ -102,7 +101,7 @@ export default function Dashboard() {
             <HContainer>
               <Icon src={apy} />
               <Text left={getRem(40)} size={getRem(60)} sameLineHeight bold>
-                APY
+                APR
               </Text>
             </HContainer>
 
@@ -111,7 +110,7 @@ export default function Dashboard() {
             </Text>
           </HContainer>
 
-          <Text
+          {/* <Text
             style={{ alignSelf: "flex-end" }}
             color={"#c4c4c4"}
             size={getRem(30)}
@@ -120,7 +119,7 @@ export default function Dashboard() {
             right={getRem(60)}
           >
             {fisApy} FIS + {ethApy} ETH
-          </Text>
+          </Text> */}
         </VContainer>
 
         <Divider />
@@ -152,7 +151,7 @@ export default function Dashboard() {
         </VContainer>
       </CardContainer>
 
-      <CardContainer
+      {/* <CardContainer
         top={getRem(50)}
         left={getRem(60)}
         right={getRem(60)}
@@ -171,7 +170,7 @@ export default function Dashboard() {
             </Text>
           </HContainer>
         </VContainer>
-      </CardContainer>
+      </CardContainer> */}
 
       <Text
         size={getRem(36)}
