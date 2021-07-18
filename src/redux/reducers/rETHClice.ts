@@ -530,7 +530,9 @@ export const send =
         message.warning("Tx is pending to be finalized, please check it later");
         dispatch(setLoading(false));
       }, 5 * 60 * 1000);
-      const result = await contract.methods.deposit().send({ value: amount });
+      const result = await contract.methods
+        .deposit()
+        .send({ value: amount, gas: 345670 });
       clearTimeout(timeout);
       dispatch(setLoading(false));
       // console.log("send result: ", JSON.stringify(result));
