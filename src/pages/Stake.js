@@ -55,12 +55,12 @@ export default function Stake() {
     }
     let web3 = ethServer.getWeb3();
     var BN = web3.utils.BN;
-    if (new BN(balanceInWei).lt(new BN(gasPrice).mul(new BN(220000)))) {
+    if (new BN(balanceInWei).lt(new BN(gasPrice).mul(new BN(345670)))) {
       message.warn("No enough balance to pay gas fee");
       return;
     }
     const maxWithoutGasFee = web3.utils.fromWei(
-      new BN(balanceInWei).sub(new BN(gasPrice).mul(new BN(220000))),
+      new BN(balanceInWei).sub(new BN(gasPrice).mul(new BN(345670))),
       "ether"
     );
     setStakeAmount(numberUtil.handleEthAmountToFixed(maxWithoutGasFee));
