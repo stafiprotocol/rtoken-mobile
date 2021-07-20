@@ -10,6 +10,8 @@ export const Text = styled.div((props) => ({
   marginBottom: props.bottom,
   marginLeft: props.left,
   marginRight: props.right,
+  "-webkit-font-smoothing": "antialiased",
+  "-moz-osx-font-smoothing": "grayscale",
 }));
 
 export const CardContainer = styled.div((props) => ({
@@ -20,7 +22,9 @@ export const CardContainer = styled.div((props) => ({
   paddingLeft: props.horizontalPadding,
   paddingRight: props.horizontalPadding,
   paddingTop: props.verticalPadding,
-  paddingBottom: props.verticalPadding,
+  paddingBottom: props.bottomPadding
+    ? props.bottomPadding
+    : props.verticalPadding,
   alignSelf: "stretch",
   backgroundColor: "#292F38",
   borderStyle: "solid",

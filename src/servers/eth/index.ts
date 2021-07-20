@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import config from "../../config/index";
+import { default as config } from "../../config/index";
 import { desEcbEncrypt, generateUUID } from "../../util/commonUtil";
 import { LOCAL_STORAGE_RETH_RECORDS } from "../../util/constants";
 import { api } from "../../util/http";
@@ -86,6 +86,15 @@ export default class Index {
     return JSON.parse(abi);
   }
 
+  getDropAbi() {
+    const abi =
+'[{"inputs":[{"internalType":"address","name":"dropper","type":"address"}],"name":"addDropper","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newThreshold","type":"uint256"}],"name":"changeThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"bytes32[]","name":"merkleProof","type":"bytes32[]"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_FIS","type":"address"},{"internalType":"address[]","name":"initialDroppers","type":"address[]"},{"internalType":"uint256","name":"initialThreshold","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"round","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"index","type":"uint256"},{"indexed":false,"internalType":"address","name":"account","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Claimed","type":"event"},{"inputs":[],"name":"closeClaim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"openClaim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[{"internalType":"address","name":"dropper","type":"address"}],"name":"removeDropper","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"dateHash","type":"bytes32"},{"internalType":"bytes32","name":"_merkleRoot","type":"bytes32"}],"name":"setMerkleRoot","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"_merkleRoot","type":"bytes32"}],"name":"setMerkleRoot","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"switchClaim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"_proposals","outputs":[{"internalType":"enumFisDropREth.ProposalStatus","name":"_status","type":"uint8"},{"internalType":"uint40","name":"_yesVotes","type":"uint40"},{"internalType":"uint8","name":"_yesVotesTotal","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_threshold","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimOpen","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimRound","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"dateDrop","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"FIS","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"dropper","type":"address"}],"name":"getDropperIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"round","type":"uint256"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"isClaimed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"merkleRoot","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]'
+    return JSON.parse(abi);
+  }
+  getDropAddress() {
+    return config.dropContractAddress();
+  }
+
   userDepositContract(address: string) {
     let web3 = this.getWeb3();
     let userDepositContract = new web3.eth.Contract(
@@ -96,6 +105,18 @@ export default class Index {
       }
     );
     return userDepositContract;
+  }
+
+  getDropContract(address: string) {
+    let web3 = this.getWeb3();
+    let dropContract = new web3.eth.Contract(
+      this.getDropAbi(),
+      this.getDropAddress(),
+      {
+        from: address,
+      }
+    );
+    return dropContract;
   }
 
   getStakingPoolStatus() {
@@ -113,6 +134,16 @@ export default class Index {
     return api.get(url);
   }
 
+  getDropRate() {
+    const url = `${config.dropApi()}/v1/drop_rate`;
+    return api.get(url);
+  }
+
+  getDropInfo(user_address: any) {
+    const url = `${config.dropApi()}/v1/drop_info`;
+    return api.get(url, { user_address });
+  }
+
   getPoolist(pam: any) {
     const url = "v1/webapi/reth/poolist";
     return api.post(url, pam);
@@ -121,7 +152,7 @@ export default class Index {
   getEthReward(ethAddress: string) {
     const source = ethAddress.toLowerCase();
     const url = config.api2() + "/stafi/appapi/rtoken/reward";
-    return api.post(url, { source, rSymbol: -1 });
+    return api.post(url, { source, rSymbol: -1, chainId: 2 });
   }
 
   async recordREthStake(source: any, txHash: any) {

@@ -9,7 +9,7 @@ import AmountInput from "../components/input/AmountInput";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { reloadData, send } from "../redux/reducers/rETHClice";
 import EthServer from "../servers/eth";
-import { ratioToAmount } from "../util/commonUtil";
+import { dropRateToAmount, ratioToAmount } from "../util/commonUtil";
 import { numberUtil } from "../util/numberUtil";
 import { getRem } from "../util/remUtil";
 
@@ -30,6 +30,7 @@ export default function Stake() {
     // fisApy,
     ratio,
     ethAccountAddress,
+    dropRate,
   } = useAppSelector((state) => {
     return {
       balance: state.rETHModule.balance,
@@ -40,6 +41,7 @@ export default function Stake() {
       ethApy: state.rETHModule.ethApy,
       fisApy: state.rETHModule.fisApy,
       ratio: state.rETHModule.ratio,
+      dropRate: state.rETHModule.dropRate,
       ethAccountAddress:
         state.rETHModule.ethAccount && state.rETHModule.ethAccount.address,
     };
@@ -131,13 +133,13 @@ export default function Stake() {
           {ethApy}
         </Text>
 
-        {/* <Text
+        <Text
           size={getRem(36)}
           sameLineHeight
           color={"#ffffff"}
           top={getRem(70)}
         >
-          FIS APR
+          FIS Reward
         </Text>
         <Text
           bold
@@ -146,8 +148,8 @@ export default function Stake() {
           color={"#00F3AB"}
           top={getRem(4)}
         >
-          {fisApy}
-        </Text> */}
+          {dropRate === "--" ? "--" : dropRateToAmount(stakeAmount, dropRate)}
+        </Text>
 
         <Text
           size={getRem(36)}

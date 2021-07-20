@@ -87,6 +87,13 @@ export const ratioToAmount = (amount: number, ratio: number) => {
   return 0;
 };
 
+export const dropRateToAmount = (amount: number, dropRate: number) => {
+  if (amount && dropRate) {
+    return numberUtil.handleFisAmountToFixed(amount * dropRate);
+  }
+  return 0;
+};
+
 export const stafi_uuid = () => {
   return Date.now().toString(36);
 };

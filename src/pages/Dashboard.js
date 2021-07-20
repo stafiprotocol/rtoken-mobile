@@ -2,14 +2,19 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import apy from "../assets/apy.svg";
 import eth_reward from "../assets/eth_reward.svg";
+import fis_reward from "../assets/fis_reward.svg";
 import reth from "../assets/reth.svg";
 import CommonButton from "../components/CommonButton";
 import { CardContainer, Text } from "../components/commonComponents";
-import { useAppSelector } from "../hooks";
+import SmallButton from "../components/SmallButton";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { claimDrop } from "../redux/reducers/rETHClice";
 import { numberUtil } from "../util/numberUtil";
 import { getRem } from "../util/remUtil";
 
 export default function Dashboard() {
+  const appDispatch = useAppDispatch();
+
   const [totalApy, setTotalApy] = useState("--");
 
   const {
@@ -19,6 +24,8 @@ export default function Dashboard() {
     tokenAmount,
     lastEraReward,
     latestMonthReward,
+    totalDropReward,
+    claimableDropReward,
   } = useAppSelector((state) => {
     return {
       balance: state.rETHModule.balance,
@@ -29,6 +36,8 @@ export default function Dashboard() {
       tokenAmount: state.rETHModule.rethAmount,
       lastEraReward: state.rETHModule.lastEraReward,
       latestMonthReward: state.rETHModule.latestMonthReward,
+      totalDropReward: state.rETHModule.totalDropReward,
+      claimableDropReward: state.rETHModule.claimableDropReward,
     };
   });
 
@@ -37,9 +46,9 @@ export default function Dashboard() {
     if (ethApy && ethApy !== "--") {
       apy += parseFloat(ethApy.replace("%", ""));
     }
-    if (fisApy && fisApy !== "--") {
-      apy += parseFloat(fisApy.replace("%", ""));
-    }
+    // if (fisApy && fisApy !== "--") {
+    //   apy += parseFloat(fisApy.replace("%", ""));
+    // }
     if (apy > 0) {
       setTotalApy(apy + "%");
     } else {
@@ -49,6 +58,10 @@ export default function Dashboard() {
 
   const exchangeOnCurve = () => {
     window.location.href = "https://curve.fi/reth";
+  };
+
+  const claim = () => {
+    appDispatch(claimDrop());
   };
 
   return (
@@ -134,7 +147,7 @@ export default function Dashboard() {
             </HContainer>
 
             <Text color={"#00F3AB"} size={getRem(60)} sameLineHeight bold>
-              {lastEraReward} ETH
+              {lastEraReward === "--" ? "--" : "+" + lastEraReward} ETH
             </Text>
           </HContainer>
 
@@ -151,11 +164,12 @@ export default function Dashboard() {
         </VContainer>
       </CardContainer>
 
-      {/* <CardContainer
+      <CardContainer
         top={getRem(50)}
         left={getRem(60)}
         right={getRem(60)}
         verticalPadding={getRem(60)}
+        bottomPadding={getRem(30)}
       >
         <VContainer>
           <HContainer left={getRem(60)} right={getRem(60)}>
@@ -165,12 +179,33 @@ export default function Dashboard() {
                 Reward
               </Text>
             </HContainer>
+
             <Text color={"#00F3AB"} size={getRem(60)} sameLineHeight bold>
-              +0.032334 FIS
+              {totalDropReward === "--" ? "--" : "+" + totalDropReward} FIS
             </Text>
           </HContainer>
+
+          <>
+            <Text
+              style={{ alignSelf: "flex-end" }}
+              color={"#c4c4c4"}
+              size={getRem(20)}
+              sameLineHeight
+              top={getRem(25)}
+              right={getRem(60)}
+            >
+              Reward can be claimed every 10:00 UTC+8
+            </Text>
+
+            <SmallButton
+              text={"Claimable " + claimableDropReward + " FIS"}
+              top={getRem(15)}
+              right={getRem(60)}
+              onClick={claim}
+            />
+          </>
         </VContainer>
-      </CardContainer> */}
+      </CardContainer>
 
       <Text
         size={getRem(36)}

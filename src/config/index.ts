@@ -11,11 +11,18 @@ const Config = {
       return "https://rtoken-api.stafi.io";
     }
   },
-  api2:()=>{
+  api2: () => {
     if (!isdev()) {
       return "https://rtoken-api2.stafi.io";
     } else {
       return "https://test-rtoken-api2.stafi.io";
+    }
+  },
+  dropApi: () => {
+    if (!isdev()) {
+      return "https://test-drop-api.stafi.io/api";
+    } else {
+      return "https://test-drop-api.stafi.io/api";
     }
   },
   stafiApi: "https://drop.stafi.io",
@@ -31,6 +38,13 @@ const Config = {
       return "0x430cf6dd3e289adae63b50ff661d6bba2dbb3f28";
     } else {
       return "0x6b3d7a220b96f3be9ff48e6be36a7e16f46b1393";
+    }
+  },
+  dropContractAddress: () => {
+    if (!isdev()) {
+      return "0x2f41dd57235c5de479a8a88df0576c729c219f2a";
+    } else {
+      return "0x2f41dd57235c5de479a8a88df0576c729c219f2a";
     }
   },
   stafiNodeDepositAddress: () => {
