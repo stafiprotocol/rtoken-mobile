@@ -93,7 +93,9 @@ export const numberUtil = {
   handleAmountToFixed3(amount) {
     return (Math.floor(amount * 1000) / 1000).toFixed(3);
   },
-
+  handleAmountToFixed1(amount) {
+    return (Math.floor(amount * 10) / 10).toFixed(1);
+  },
   // The return string contains 6 decimal places and 2 decimal places, including 0
   handleEthRoundToFixed(amount) {
     if (amount === "--" || isNaN(amount)) {

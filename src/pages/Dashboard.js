@@ -51,11 +51,11 @@ export default function Dashboard() {
     //   apy += parseFloat(fisApy.replace("%", ""));
     // }
     if (apy > 0) {
-      setTotalApy(apy + "%");
+      setTotalApy(numberUtil.handleAmountToFixed1(apy) + "%");
     } else {
       setTotalApy("--");
     }
-  }, [ethApy, fisApy]);
+  }, [ethApy]);
 
   useEffect(() => {
     setClaimDisabled(
