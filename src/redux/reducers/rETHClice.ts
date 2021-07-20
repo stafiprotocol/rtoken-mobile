@@ -596,7 +596,6 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
 
 export const claimDrop = (cb?: Function): AppThunk =>
   async (dispatch, getState) => {
-    dispatch(setLoading(true));
     let web3 = ethServer.getWeb3();
     const address = getState().rETHModule.ethAccount.address;
     const contract = ethServer.getDropContract(
@@ -612,6 +611,8 @@ export const claimDrop = (cb?: Function): AppThunk =>
     }
     let balanceTree = new BalanceTree(getState().rETHModule.dropList);
     const proof = balanceTree.getProof(itemIndex, address.toLowerCase(), amount);
+
+    dispatch(setLoading(true));
     try {
       let timeout = setTimeout(() => {
         message.warning("Tx is pending to be finalized, please check it later");
