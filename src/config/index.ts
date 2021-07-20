@@ -42,9 +42,9 @@ const Config = {
   },
   dropContractAddress: () => {
     if (!isdev()) {
-      return "0x2f41dd57235c5de479a8a88df0576c729c219f2a";
+      return "";
     } else {
-      return "0x2f41dd57235c5de479a8a88df0576c729c219f2a";
+      return "0x9cea70ef9761b81ae78bbc14c6cb0b7fce1a0348";
     }
   },
   stafiNodeDepositAddress: () => {
