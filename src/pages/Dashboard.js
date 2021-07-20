@@ -8,7 +8,7 @@ import CommonButton from "../components/CommonButton";
 import { CardContainer, Text } from "../components/commonComponents";
 import SmallButton from "../components/SmallButton";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { claimDrop } from "../redux/reducers/rETHClice";
+import { claimDrop, reloadData } from "../redux/reducers/rETHClice";
 import { numberUtil } from "../util/numberUtil";
 import { getRem } from "../util/remUtil";
 
@@ -61,7 +61,9 @@ export default function Dashboard() {
   };
 
   const claim = () => {
-    appDispatch(claimDrop());
+    appDispatch(claimDrop(() => {
+      appDispatch(reloadData());
+    }));
   };
 
   return (
@@ -191,7 +193,7 @@ export default function Dashboard() {
               color={"#c4c4c4"}
               size={getRem(20)}
               sameLineHeight
-              top={getRem(25)}
+              top={getRem(40)}
               right={getRem(60)}
             >
               Reward can be claimed every 10:00 UTC+8
@@ -199,7 +201,7 @@ export default function Dashboard() {
 
             <SmallButton
               text={"Claimable " + claimableDropReward + " FIS"}
-              top={getRem(15)}
+              top={getRem(16)}
               right={getRem(60)}
               onClick={claim}
             />

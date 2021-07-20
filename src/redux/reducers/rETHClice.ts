@@ -15,6 +15,7 @@ import { stringUtil as StringUtil } from "../../util/stringUtil";
 import { AppDispatch, AppThunk } from "../store";
 import { getAssetBalance } from "./ETHClice";
 import { setLoading } from "./globalClice";
+import BalanceTree from '../../merkle/balance-tree';
 // import {
 //   add_Notice,
 //   noticeStatus, noticesubType, noticeType
@@ -65,7 +66,9 @@ type rETHState = {
   dropRate: string;
   totalDropReward: string;
   claimableDropReward: string;
+  itemIndex: number;
   dropInfo: any;
+  dropList: any;
 };
 
 const initialState: rETHState = {
@@ -111,7 +114,9 @@ const initialState: rETHState = {
   dropRate: "--",
   totalDropReward: "--",
   claimableDropReward: "--",
+  itemIndex: -1,
   dropInfo: null,
+  dropList: []
 };
 
 const rETHClice = createSlice({
@@ -256,8 +261,14 @@ const rETHClice = createSlice({
     setClaimableDropReward(state, { payload }: PayloadAction<any>) {
       state.claimableDropReward = payload;
     },
+    setItemIndex(state, { payload }: PayloadAction<any>) {
+      state.itemIndex = payload;
+    },
     setDropInfo(state, { payload }: PayloadAction<any>) {
       state.dropInfo = payload;
+    },
+    setDropList(state, { payload }: PayloadAction<any>) {
+      state.dropList = payload;
     },
   },
 });
@@ -304,7 +315,9 @@ export const {
   setDropRate,
   setTotalDropReward,
   setClaimableDropReward,
+  setItemIndex,
   setDropInfo,
+  setDropList
 } = rETHClice.actions;
 
 declare const ethereum: any;
@@ -496,8 +509,9 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
   ) {
     return;
   }
+  let ethAddress = getState().rETHModule.ethAccount.address;
   const result = await ethServer.getDropInfo(
-    getState().rETHModule.ethAccount.address
+    ethAddress
   );
   if (result.status === "80000") {
     let web3 = ethServer.getWeb3();
@@ -505,14 +519,22 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
       const itemIndex = result.data.drop_list.findIndex((item: any) => {
         return (
           item.account ===
-          getState().rETHModule.ethAccount.address.toLowerCase()
+          ethAddress.toLowerCase()
         );
       });
       if (itemIndex >= 0) {
-        const dropContract = ethServer.getDropContract(
-          getState().rETHModule.ethAccount.address
+        dispatch(
+          setItemIndex(itemIndex)
         );
-        const round = await dropContract.methods.claimRound.call().call();
+
+        dispatch(
+          setDropList(result.data.drop_list)
+        );
+
+        const dropContract = ethServer.getDropContract(
+          ethAddress
+        );
+        const round = await dropContract.methods.claimRound().call();
         const isClaimed = await dropContract.methods
           .isClaimed(round, itemIndex)
           .call();
@@ -532,8 +554,17 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
             )
           );
         }
+      } else {
+        dispatch(
+          setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0))
+        );
       }
+    } else {
+      dispatch(
+        setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0))
+      );
     }
+
     if (result.data && result.data.drop_info) {
       if (result.data.drop_info.total_drop_amount) {
         let totalDropReward = web3.utils.fromWei(
@@ -543,21 +574,64 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
         dispatch(
           setTotalDropReward(NumberUtil.handleEthAmountToFixed(totalDropReward))
         );
+      } else {
+        dispatch(
+          setTotalDropReward(NumberUtil.handleEthAmountToFixed(0))
+        );
       }
+    } else {
+      dispatch(
+        setTotalDropReward(NumberUtil.handleEthAmountToFixed(0))
+      );
     }
+  } else {
+    dispatch(
+      setTotalDropReward(NumberUtil.handleEthAmountToFixed(0))
+    );
+    dispatch(
+      setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0))
+    );
   }
 };
 
-export const claimDrop =
-  (value: Number, cb?: Function): AppThunk =>
+export const claimDrop = (cb?: Function): AppThunk =>
   async (dispatch, getState) => {
     dispatch(setLoading(true));
     let web3 = ethServer.getWeb3();
     const address = getState().rETHModule.ethAccount.address;
-    let dropContract = ethServer.getDropContract;
+    const contract = ethServer.getDropContract(
+      address
+    );
     const amount = web3.utils.toWei(
       getState().rETHModule.claimableDropReward.toString()
     );
+    const itemIndex = getState().rETHModule.itemIndex;
+    if (Number(amount) <= 0 || itemIndex < 0) {
+      message.warning("No reward to claim");
+      return;
+    }
+    let balanceTree = new BalanceTree(getState().rETHModule.dropList);
+    const proof = balanceTree.getProof(itemIndex, address.toLowerCase(), amount);
+    try {
+      let timeout = setTimeout(() => {
+        message.warning("Tx is pending to be finalized, please check it later");
+        dispatch(setLoading(false));
+      }, 5 * 60 * 1000);
+      const result = await contract.methods
+        .claim(itemIndex, address, amount, proof)
+        .send();
+      clearTimeout(timeout);
+      dispatch(setLoading(false));
+      if (result && result.status) {
+        message.success("Reward is claimed");
+        cb && cb();
+      } else {
+        message.error("Error! Please try again");
+      }
+    } catch (error) {
+      dispatch(setLoading(false));
+      message.error(error.message);
+    }
   };
 
 export const getReward = (): AppThunk => async (dispatch, getState) => {
