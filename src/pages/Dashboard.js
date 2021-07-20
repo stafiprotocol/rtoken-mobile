@@ -15,12 +15,10 @@ import { getRem } from "../util/remUtil";
 export default function Dashboard() {
   const appDispatch = useAppDispatch();
 
-  const [totalApy, setTotalApy] = useState("--");
   const [claimDisabled, setClaimDisabled] = useState(true);
 
   const {
     ethApy,
-    fisApy,
     ratio,
     tokenAmount,
     lastEraReward,
@@ -41,21 +39,6 @@ export default function Dashboard() {
       claimableDropReward: state.rETHModule.claimableDropReward,
     };
   });
-
-  useEffect(() => {
-    let apy = 0.0;
-    if (ethApy && ethApy !== "--") {
-      apy += parseFloat(ethApy.replace("%", ""));
-    }
-    // if (fisApy && fisApy !== "--") {
-    //   apy += parseFloat(fisApy.replace("%", ""));
-    // }
-    if (apy > 0) {
-      setTotalApy(numberUtil.handleAmountToFixed1(apy) + "%");
-    } else {
-      setTotalApy("--");
-    }
-  }, [ethApy]);
 
   useEffect(() => {
     setClaimDisabled(
@@ -132,7 +115,7 @@ export default function Dashboard() {
             </HContainer>
 
             <Text color={"#00F3AB"} size={getRem(60)} sameLineHeight bold>
-              {totalApy}
+              {ethApy}
             </Text>
           </HContainer>
 
