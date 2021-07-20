@@ -1,4 +1,3 @@
-import { message } from "antd";
 import axios from "axios";
 import { createBrowserHistory, createHashHistory } from "history";
 import { includes } from "lodash";
@@ -80,7 +79,7 @@ axiosInstance.interceptors.response.use(
     // }
 
     if (response.data.code && response.data.code !== "0") {
-      message.error(response.data.message);
+      // message.error(response.data.message);
     }
     return response;
   },
@@ -139,7 +138,7 @@ export const api = {
             console.log("downFileName: ", downFileName);
             // setSessionStorageItem(POS_DOWNLOAD_FILE_NAME, downFileName);
           } catch (error) {
-            message.error("Request exception");
+            // message.error("Request exception");
           }
         }
         return Promise.resolve(res.data);
@@ -162,13 +161,13 @@ export const api = {
             sessionStorage.clear();
             console.error("TODO: catch error");
           } else if (err.response && err.response.status === 500) {
-            message.error("Server exception, please contact administrator");
+            // message.error("Server exception, please contact administrator");
           } else {
-            !argu.hideMsg &&
-              message.error((data && data.message) || "internet error"); // TBD
+            // !argu.hideMsg &&
+            //   message.error((data && data.message) || "internet error"); // TBD
           }
         } else {
-          message.error("The request timed out. Please try again later");
+          // message.error("The request timed out. Please try again later");
         }
         return Promise.reject(err);
       });

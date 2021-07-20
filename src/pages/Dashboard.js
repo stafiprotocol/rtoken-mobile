@@ -16,6 +16,7 @@ export default function Dashboard() {
   const appDispatch = useAppDispatch();
 
   const [totalApy, setTotalApy] = useState("--");
+  const [claimDisabled, setClaimDisabled] = useState(true);
 
   const {
     ethApy,
@@ -56,14 +57,24 @@ export default function Dashboard() {
     }
   }, [ethApy, fisApy]);
 
+  useEffect(() => {
+    setClaimDisabled(
+      !claimableDropReward ||
+        claimableDropReward === "--" ||
+        Number(claimableDropReward) === 0
+    );
+  }, [claimableDropReward]);
+
   const exchangeOnCurve = () => {
     window.location.href = "https://curve.fi/reth";
   };
 
   const claim = () => {
-    appDispatch(claimDrop(() => {
-      appDispatch(reloadData());
-    }));
+    appDispatch(
+      claimDrop(() => {
+        appDispatch(reloadData());
+      })
+    );
   };
 
   return (
@@ -161,7 +172,7 @@ export default function Dashboard() {
             top={getRem(4)}
             right={getRem(60)}
           >
-            Reward of last era
+            Reward of last epoch
           </Text>
         </VContainer>
       </CardContainer>
@@ -204,6 +215,7 @@ export default function Dashboard() {
               top={getRem(16)}
               right={getRem(60)}
               onClick={claim}
+              disabled={claimDisabled}
             />
           </>
         </VContainer>

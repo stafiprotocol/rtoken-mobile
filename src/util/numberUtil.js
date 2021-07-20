@@ -90,6 +90,9 @@ export const numberUtil = {
   handleEthAmountToFixed(amount) {
     return (Math.floor(amount * 1000000) / 1000000).toFixed(6);
   },
+  handleAmountToFixed3(amount) {
+    return (Math.floor(amount * 1000) / 1000).toFixed(3);
+  },
 
   // The return string contains 6 decimal places and 2 decimal places, including 0
   handleEthRoundToFixed(amount) {

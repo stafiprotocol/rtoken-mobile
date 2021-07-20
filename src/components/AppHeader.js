@@ -36,7 +36,7 @@ export default function AppHeader(props) {
         >
           <IndicatorContainer isSelected={index === 0}>
             <Text
-              size={getRem(30)}
+              size={getRem(40)}
               bold={index === 0}
               color={index === 0 ? "#ffffff" : "#c4c4c4"}
             >
@@ -51,7 +51,7 @@ export default function AppHeader(props) {
         >
           <IndicatorContainer isSelected={index === 1}>
             <Text
-              size={getRem(30)}
+              size={getRem(40)}
               bold={index === 1}
               color={index === 1 ? "#ffffff" : "#c4c4c4"}
             >

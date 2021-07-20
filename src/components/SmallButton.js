@@ -18,7 +18,7 @@ export default function SmallButton(props) {
       disabled={props.disabled}
       onClick={handleClick}
     >
-      <Text color={"#23292F"} size={getRem(24)} sameLineHeight bold>
+      <Text color={"#23292F"} size={getRem(34)} sameLineHeight bold>
         {props.text}
       </Text>
     </Button>
@@ -30,16 +30,16 @@ const Button = styled.div((props) => ({
   marginBottom: props.bottom,
   marginLeft: props.left,
   marginRight: props.right,
-  paddingTop: getRem(15),
-  paddingBottom: getRem(15),
-  paddingLeft: getRem(20),
-  paddingRight: getRem(20),
+  paddingTop: getRem(20),
+  paddingBottom: getRem(20),
+  paddingLeft: getRem(23),
+  paddingRight: getRem(23),
   opacity: props.disabled ? 0.5 : 1,
-  height: getRem(60),
+  height: getRem(84),
   display: "flex",
   alignItems: "center",
   alignSelf: "flex-end",
   justifyContent: "center",
   backgroundColor: "#00F3AB",
-  borderRadius: getRem(30),
+  borderRadius: getRem(42),
 }));

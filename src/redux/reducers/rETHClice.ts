@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 import Web3Utils from "web3-utils";
+import BalanceTree from '../../merkle/balance-tree';
 import EthServer from "../../servers/eth";
 import {
   getLocalStorageItem,
@@ -15,7 +16,6 @@ import { stringUtil as StringUtil } from "../../util/stringUtil";
 import { AppDispatch, AppThunk } from "../store";
 import { getAssetBalance } from "./ETHClice";
 import { setLoading } from "./globalClice";
-import BalanceTree from '../../merkle/balance-tree';
 // import {
 //   add_Notice,
 //   noticeStatus, noticesubType, noticeType
@@ -337,7 +337,7 @@ export const handleEthAccount =
       })
       .catch((error: any) => {
         dispatch(setEthAccount({ address: address, balance: "--" }));
-        message.error(error.message);
+        // message.error(error.message);
       });
   };
 
@@ -541,7 +541,7 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
 
         if (isClaimed) {
           dispatch(
-            setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0))
+            setClaimableDropReward(NumberUtil.handleAmountToFixed3(0))
           );
         } else {
           const claimableDropReward = web3.utils.fromWei(
@@ -550,7 +550,7 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
           );
           dispatch(
             setClaimableDropReward(
-              NumberUtil.handleEthAmountToFixed(claimableDropReward)
+              NumberUtil.handleAmountToFixed3(claimableDropReward)
             )
           );
         }
@@ -572,24 +572,24 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
           "ether"
         );
         dispatch(
-          setTotalDropReward(NumberUtil.handleEthAmountToFixed(totalDropReward))
+          setTotalDropReward(NumberUtil.handleAmountToFixed3(totalDropReward))
         );
       } else {
         dispatch(
-          setTotalDropReward(NumberUtil.handleEthAmountToFixed(0))
+          setTotalDropReward(NumberUtil.handleAmountToFixed3(0))
         );
       }
     } else {
       dispatch(
-        setTotalDropReward(NumberUtil.handleEthAmountToFixed(0))
+        setTotalDropReward(NumberUtil.handleAmountToFixed3(0))
       );
     }
   } else {
     dispatch(
-      setTotalDropReward(NumberUtil.handleEthAmountToFixed(0))
+      setTotalDropReward(NumberUtil.handleAmountToFixed3(0))
     );
     dispatch(
-      setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0))
+      setClaimableDropReward(NumberUtil.handleAmountToFixed3(0))
     );
   }
 };

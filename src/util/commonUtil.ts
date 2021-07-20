@@ -89,7 +89,7 @@ export const ratioToAmount = (amount: number, ratio: number) => {
 
 export const dropRateToAmount = (amount: number, dropRate: number) => {
   if (amount && dropRate) {
-    return numberUtil.handleFisAmountToFixed(amount * dropRate);
+    return numberUtil.handleAmountToFixed3(amount * dropRate);
   }
   return 0;
 };
