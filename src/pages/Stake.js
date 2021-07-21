@@ -135,29 +135,27 @@ export default function Stake() {
           {ethApy}
         </Text>
 
-        {dropIsOpen && (
-          <>
-            <Text
-              size={getRem(36)}
-              sameLineHeight
-              color={"#ffffff"}
-              top={getRem(70)}
-            >
-              FIS Reward
-            </Text>
-            <Text
-              bold
-              size={getRem(70)}
-              sameLineHeight
-              color={"#00F3AB"}
-              top={getRem(4)}
-            >
-              {dropRate === "--"
-                ? "--"
-                : dropRateToAmount(stakeAmount, dropRate)}
-            </Text>
-          </>
-        )}
+        <Text
+          size={getRem(36)}
+          sameLineHeight
+          color={"#ffffff"}
+          top={getRem(70)}
+        >
+          FIS Reward
+        </Text>
+        <Text
+          bold
+          size={getRem(70)}
+          sameLineHeight
+          color={"#00F3AB"}
+          top={getRem(4)}
+        >
+          {dropRate === "--"
+            ? "--"
+            : dropIsOpen
+            ? dropRateToAmount(stakeAmount, dropRate)
+            : 0}
+        </Text>
 
         <Text
           size={getRem(36)}

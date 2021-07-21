@@ -162,7 +162,11 @@ export default class Index {
     return api.post(url, { source, rSymbol: -1, chainId: 2 });
   }
 
-  async recordTxHashInLocal(txHash: any, blockHash: any, amountInWei: any) {
+  async recordStakeTxHashInLocal(
+    txHash: any,
+    blockHash: any,
+    amountInWei: any
+  ) {
     const savedStr = localStorage.getItem(LOCAL_STORAGE_STAKE_TXS);
     let txs = [];
     if (savedStr) {
@@ -187,6 +191,21 @@ export default class Index {
     }
   }
 
+  removeStakeTxHashInLocal(txHash: any) {
+    const savedStr = localStorage.getItem(LOCAL_STORAGE_STAKE_TXS);
+    let txs = [];
+    if (savedStr) {
+      txs = JSON.parse(savedStr);
+    }
+    const index = txs.findIndex((item: any) => {
+      return item.txHash === txHash;
+    });
+    if (index >= 0) {
+      txs.splice(index, 1);
+      localStorage.setItem(LOCAL_STORAGE_STAKE_TXS, JSON.stringify(txs));
+    }
+  }
+
   getLocalFisReward(txList: any) {
     const savedStr = localStorage.getItem(LOCAL_STORAGE_STAKE_TXS);
     let txs = [];
@@ -202,6 +221,8 @@ export default class Index {
             web3.utils.toBN(item.amount).mul(web3.utils.toBN(item.dropRate))
           )
         );
+      } else {
+        this.removeStakeTxHashInLocal(item.txHash);
       }
     });
     return result;

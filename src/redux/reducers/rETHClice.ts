@@ -112,7 +112,7 @@ const initialState: rETHState = {
   ethAmount: 4,
   lastEraReward: "--",
   latestMonthReward: "--",
-  dropIsOpen: false,
+  dropIsOpen: true,
   dropRate: "--",
   totalDropReward: "--",
   claimableDropReward: "--",
@@ -735,7 +735,7 @@ export const send =
       if (result && result.status) {
         ethServer.recordREthStake(address, result.transactionHash);
         if (getState().rETHModule.dropIsOpen) {
-          ethServer.recordTxHashInLocal(
+          ethServer.recordStakeTxHashInLocal(
             result.transactionHash,
             result.blockHash,
             amount
