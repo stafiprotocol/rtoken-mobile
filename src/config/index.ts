@@ -20,7 +20,7 @@ const Config = {
   },
   dropApi: () => {
     if (!isdev()) {
-      return "https://test-drop-api.stafi.io/api";
+      return "https://drop-api.stafi.io/api";
     } else {
       return "https://test-drop-api.stafi.io/api";
     }
@@ -42,7 +42,7 @@ const Config = {
   },
   dropContractAddress: () => {
     if (!isdev()) {
-      return "";
+      return "0x1e647a4e68f1d78c2bab3143be85c224e9917536";
     } else {
       return "0x1db95173ee09e0573a98a4f609e42a4e07d6e80c";
     }
