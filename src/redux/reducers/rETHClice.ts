@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 import Web3Utils from "web3-utils";
-import BalanceTree from '../../merkle/balance-tree';
+import BalanceTree from "../../merkle/balance-tree";
 import EthServer from "../../servers/eth";
 import {
   getLocalStorageItem,
@@ -11,7 +11,7 @@ import {
   removeLocalStorageItem,
   setLocalStorageItem
 } from "../../util/commonUtil";
-import { numberUtil as NumberUtil } from "../../util/numberUtil";
+import { numberUtil, numberUtil as NumberUtil } from "../../util/numberUtil";
 import { stringUtil as StringUtil } from "../../util/stringUtil";
 import { AppDispatch, AppThunk } from "../store";
 import { getAssetBalance } from "./ETHClice";
@@ -116,7 +116,7 @@ const initialState: rETHState = {
   claimableDropReward: "--",
   itemIndex: -1,
   dropInfo: null,
-  dropList: []
+  dropList: [],
 };
 
 const rETHClice = createSlice({
@@ -317,7 +317,7 @@ export const {
   setClaimableDropReward,
   setItemIndex,
   setDropInfo,
-  setDropList
+  setDropList,
 } = rETHClice.actions;
 
 declare const ethereum: any;
@@ -390,6 +390,9 @@ export const get_eth_getBalance =
       return;
     }
     var balance = await web3.eth.getBalance(address);
+    if (!numberUtil.isNumber(balance)) {
+      return;
+    }
     dispatch(setBalanceInWei(new BN(balance).toString()));
     // console.log("web3 getBalance: ", balance);
 
@@ -431,6 +434,9 @@ export const getMinimumDeposit = (): AppThunk => async (dispatch, getState) => {
     }
   );
   const result = await userDepositContract.methods.getMinimumDeposit().call();
+  if (!numberUtil.isNumber(result)) {
+    return;
+  }
   const minimumDeposit = web3.utils.fromWei(web3.utils.toBN(result), "ether");
   // console.log("minimumDeposit: ", minimumDeposit);
   dispatch(setMinimumDeposit(minimumDeposit));
@@ -510,39 +516,29 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
     return;
   }
   let ethAddress = getState().rETHModule.ethAccount.address;
-  const result = await ethServer.getDropInfo(
-    ethAddress
-  );
+  const result = await ethServer.getDropInfo(ethAddress);
   if (result.status === "80000") {
     let web3 = ethServer.getWeb3();
     if (result.data && result.data.drop_list) {
       const itemIndex = result.data.drop_list.findIndex((item: any) => {
-        return (
-          item.account ===
-          ethAddress.toLowerCase()
-        );
+        return item.account === ethAddress.toLowerCase();
       });
       if (itemIndex >= 0) {
-        dispatch(
-          setItemIndex(itemIndex)
-        );
+        dispatch(setItemIndex(itemIndex));
 
-        dispatch(
-          setDropList(result.data.drop_list)
-        );
+        dispatch(setDropList(result.data.drop_list));
 
-        const dropContract = ethServer.getDropContract(
-          ethAddress
-        );
+        const dropContract = ethServer.getDropContract(ethAddress);
         const round = await dropContract.methods.claimRound().call();
         const isClaimed = await dropContract.methods
           .isClaimed(round, itemIndex)
           .call();
 
-        if (isClaimed) {
-          dispatch(
-            setClaimableDropReward(NumberUtil.handleAmountToFixed3(0))
-          );
+        if (
+          isClaimed ||
+          !numberUtil.isNumber(result.data.drop_list[itemIndex].amount)
+        ) {
+          dispatch(setClaimableDropReward(NumberUtil.handleAmountToFixed3(0)));
         } else {
           const claimableDropReward = web3.utils.fromWei(
             web3.utils.toBN(result.data.drop_list[itemIndex].amount),
@@ -555,14 +551,10 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
           );
         }
       } else {
-        dispatch(
-          setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0))
-        );
+        dispatch(setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0)));
       }
     } else {
-      dispatch(
-        setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0))
-      );
+      dispatch(setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0)));
     }
 
     if (result.data && result.data.drop_info) {
@@ -575,32 +567,23 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
           setTotalDropReward(NumberUtil.handleAmountToFixed3(totalDropReward))
         );
       } else {
-        dispatch(
-          setTotalDropReward(NumberUtil.handleAmountToFixed3(0))
-        );
+        dispatch(setTotalDropReward(NumberUtil.handleAmountToFixed3(0)));
       }
     } else {
-      dispatch(
-        setTotalDropReward(NumberUtil.handleAmountToFixed3(0))
-      );
+      dispatch(setTotalDropReward(NumberUtil.handleAmountToFixed3(0)));
     }
   } else {
-    dispatch(
-      setTotalDropReward(NumberUtil.handleAmountToFixed3(0))
-    );
-    dispatch(
-      setClaimableDropReward(NumberUtil.handleAmountToFixed3(0))
-    );
+    dispatch(setTotalDropReward(NumberUtil.handleAmountToFixed3(0)));
+    dispatch(setClaimableDropReward(NumberUtil.handleAmountToFixed3(0)));
   }
 };
 
-export const claimDrop = (cb?: Function): AppThunk =>
+export const claimDrop =
+  (cb?: Function): AppThunk =>
   async (dispatch, getState) => {
     let web3 = ethServer.getWeb3();
     const address = getState().rETHModule.ethAccount.address;
-    const contract = ethServer.getDropContract(
-      address
-    );
+    const contract = ethServer.getDropContract(address);
     const amount = web3.utils.toWei(
       getState().rETHModule.claimableDropReward.toString()
     );
@@ -610,7 +593,11 @@ export const claimDrop = (cb?: Function): AppThunk =>
       return;
     }
     let balanceTree = new BalanceTree(getState().rETHModule.dropList);
-    const proof = balanceTree.getProof(itemIndex, address.toLowerCase(), amount);
+    const proof = balanceTree.getProof(
+      itemIndex,
+      address.toLowerCase(),
+      amount
+    );
 
     dispatch(setLoading(true));
     try {
@@ -644,7 +631,11 @@ export const getReward = (): AppThunk => async (dispatch, getState) => {
   );
   if (result.message === "success") {
     let web3 = ethServer.getWeb3();
-    if (result.data && result.data.lastEraReward != null) {
+    if (
+      result.data &&
+      result.data.lastEraReward != null &&
+      numberUtil.isNumber(result.data.lastEraReward)
+    ) {
       const lastEraRewardFromWei = web3.utils.fromWei(
         web3.utils.toBN(result.data.lastEraReward),
         "ether"
@@ -655,7 +646,11 @@ export const getReward = (): AppThunk => async (dispatch, getState) => {
         )
       );
     }
-    if (result.data && result.data.latestMonthReward != null) {
+    if (
+      result.data &&
+      result.data.latestMonthReward != null &&
+      numberUtil.isNumber(result.data.latestMonthReward)
+    ) {
       const latestMonthRewardFromWei = web3.utils.fromWei(
         web3.utils.toBN(result.data.latestMonthReward),
         "ether"
