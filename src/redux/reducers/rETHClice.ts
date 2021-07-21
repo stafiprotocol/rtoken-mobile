@@ -568,11 +568,14 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
 
     if (result.data && result.data.drop_info) {
       let totalAmount = web3.utils.toBN(0);
-      totalAmount = web3.utils.toBN(
-        totalAmount.add(
-          web3.utils.toBN(result.data.drop_info.total_drop_amount)
-        )
-      );
+      if (result.data.drop_info.total_drop_amount) {
+        totalAmount = web3.utils.toBN(
+          totalAmount.add(
+            web3.utils.toBN(result.data.drop_info.total_drop_amount)
+          )
+        );
+      }
+
       totalAmount = web3.utils.toBN(
         totalAmount.add(
           web3.utils.toBN(
