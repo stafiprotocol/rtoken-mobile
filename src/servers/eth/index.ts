@@ -1,8 +1,6 @@
 import Web3 from "web3";
 import { default as config } from "../../config/index";
-import {
-  LOCAL_STORAGE_STAKE_TXS
-} from "../../util/constants";
+import { LOCAL_STORAGE_STAKE_TXS } from "../../util/constants";
 import { api } from "../../util/http";
 
 declare const window: any;
@@ -170,8 +168,13 @@ export default class Index {
     if (savedStr) {
       txs = JSON.parse(savedStr);
     }
-    const block = await this.getWeb3().eth.getBlock(blockHash);
-    const result = await this.getDropRate(block.timestamp);
+    const web3Result = await this.getBlockByHash(blockHash);
+    let timestamp = 0;
+    if (web3Result && web3Result.result && web3Result.result.timestamp) {
+      timestamp = parseInt(web3Result.result.timestamp, 16);
+    }
+
+    const result = await this.getDropRate(timestamp);
 
     if (result.status === "80000") {
       if (result.data && result.data.drop_rate) {
@@ -180,7 +183,7 @@ export default class Index {
         txs.push({
           txHash,
           amount: amountInWei,
-          timestamp: block.timestamp,
+          timestamp,
           dropRate,
         });
 
@@ -226,4 +229,13 @@ export default class Index {
     return result;
   }
 
+  getBlockByHash(blockHash: any) {
+    const url = config.web3Api();
+    return api.post(url, {
+      jsonrpc: "2.0",
+      method: "eth_getBlockByHash",
+      params: [blockHash, false],
+      id: 1,
+    });
+  }
 }

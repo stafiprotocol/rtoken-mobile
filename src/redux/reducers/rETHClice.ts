@@ -389,6 +389,7 @@ export const get_eth_getBalance =
     if (!getState().rETHModule.ethAccount) {
       return;
     }
+
     let web3 = ethServer.getWeb3();
     var BN = web3.utils.BN;
     const address = getState().rETHModule.ethAccount.address;
@@ -732,7 +733,6 @@ export const send =
         .deposit()
         .send({ value: amount, gas: 345670 });
       clearTimeout(timeout);
-      dispatch(setLoading(false));
       // console.log("send result: ", JSON.stringify(result));
       if (result && result.status) {
         if (getState().rETHModule.dropIsOpen) {
@@ -746,6 +746,7 @@ export const send =
             .catch((err) => [err, null]);
         }
         message.success("Deposit successfully");
+        dispatch(setLoading(false));
         cb && cb();
       } else {
         message.error("Error! Please try again");

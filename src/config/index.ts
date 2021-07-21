@@ -99,6 +99,12 @@ const Config = {
   curve: {
     rethURL: "https://curve.fi/reth",
   },
+  web3Api: () => {
+    if (!isdev()) {
+      return "https://eth-mainnet.alchemyapi.io/v2/bkdml_X06uuwFV4-KONSO3NoPHkIIv8Z";
+    }
+    return "https://eth-goerli.alchemyapi.io/v2/O4w9rgihCPcRvH1IDF2BHLt5YSzSI9oJ";
+  },
 };
 
 export default Config;
