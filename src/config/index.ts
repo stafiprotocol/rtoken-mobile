@@ -44,7 +44,7 @@ const Config = {
     if (!isdev()) {
       return "";
     } else {
-      return "0x9cea70ef9761b81ae78bbc14c6cb0b7fce1a0348";
+      return "0x1db95173ee09e0573a98a4f609e42a4e07d6e80c";
     }
   },
   stafiNodeDepositAddress: () => {
