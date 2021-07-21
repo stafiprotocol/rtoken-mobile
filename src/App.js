@@ -63,8 +63,6 @@ function AppContent() {
     account && appDispatch(handleEthAccount(account));
     // ethAccountAddress && appDispatch(reloadData());
     appDispatch(reloadData());
-
-    ethServer.checkSavedREthRecords();
   }, [history, appDispatch, ethAccountAddress, account]);
 
   return (

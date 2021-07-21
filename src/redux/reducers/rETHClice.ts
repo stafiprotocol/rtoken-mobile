@@ -737,7 +737,6 @@ export const send =
       dispatch(setLoading(false));
       // console.log("send result: ", JSON.stringify(result));
       if (result && result.status) {
-        ethServer.recordREthStake(address, result.transactionHash);
         if (getState().rETHModule.dropIsOpen) {
           await ethServer.recordStakeTxHashInLocal(
             result.transactionHash,
