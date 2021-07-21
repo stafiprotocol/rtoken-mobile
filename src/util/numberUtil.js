@@ -212,4 +212,8 @@ export const numberUtil = {
   rTokenRateToHuman(amount) {
     return amount / 1000000000000;
   },
+  isNumber(input) {
+    var re = /^[0-9]+.?[0-9]*/;
+    return re.test(input);
+  },
 };
