@@ -560,10 +560,10 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
           );
         }
       } else {
-        dispatch(setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0)));
+        dispatch(setClaimableDropReward(NumberUtil.handleAmountToFixed3(0)));
       }
     } else {
-      dispatch(setClaimableDropReward(NumberUtil.handleEthAmountToFixed(0)));
+      dispatch(setClaimableDropReward(NumberUtil.handleAmountToFixed3(0)));
     }
 
     if (result.data && result.data.drop_info) {
