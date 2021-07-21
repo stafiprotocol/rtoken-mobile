@@ -63,6 +63,7 @@ type rETHState = {
   ethAmount: number;
   lastEraReward: string;
   latestMonthReward: string;
+  dropIsOpen: boolean;
   dropRate: string;
   totalDropReward: string;
   claimableDropReward: string;
@@ -111,6 +112,7 @@ const initialState: rETHState = {
   ethAmount: 4,
   lastEraReward: "--",
   latestMonthReward: "--",
+  dropIsOpen: false,
   dropRate: "--",
   totalDropReward: "--",
   claimableDropReward: "--",
@@ -252,6 +254,9 @@ const rETHClice = createSlice({
     setLatestMonthReward(state, { payload }: PayloadAction<any>) {
       state.latestMonthReward = payload;
     },
+    setDropIsOpen(state, { payload }: PayloadAction<any>) {
+      state.dropIsOpen = payload;
+    },
     setDropRate(state, { payload }: PayloadAction<any>) {
       state.dropRate = payload;
     },
@@ -312,6 +317,7 @@ export const {
   setEthAmount,
   setLastEraReward,
   setLatestMonthReward,
+  setDropIsOpen,
   setDropRate,
   setTotalDropReward,
   setClaimableDropReward,
@@ -498,7 +504,7 @@ export const getStakerApr = (): AppThunk => async (dispatch, getState) => {
 };
 
 export const getDropRate = (): AppThunk => async (dispatch, getState) => {
-  const result = await ethServer.getDropRate();
+  const result = await ethServer.getDropRate(null);
   if (result.status === "80000") {
     if (result.data && result.data.drop_rate) {
       let web3 = ethServer.getWeb3();
@@ -518,6 +524,9 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
   let ethAddress = getState().rETHModule.ethAccount.address;
   const result = await ethServer.getDropInfo(ethAddress);
   if (result.status === "80000") {
+    if (result.data) {
+      dispatch(setDropIsOpen(result.data.drop_is_open));
+    }
     let web3 = ethServer.getWeb3();
     if (result.data && result.data.drop_list) {
       const itemIndex = result.data.drop_list.findIndex((item: any) => {
@@ -558,17 +567,24 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
     }
 
     if (result.data && result.data.drop_info) {
-      if (result.data.drop_info.total_drop_amount) {
-        let totalDropReward = web3.utils.fromWei(
-          result.data.drop_info.total_drop_amount,
-          "ether"
-        );
-        dispatch(
-          setTotalDropReward(NumberUtil.handleAmountToFixed3(totalDropReward))
-        );
-      } else {
-        dispatch(setTotalDropReward(NumberUtil.handleAmountToFixed3(0)));
-      }
+      let totalAmount = web3.utils.toBN(0);
+      totalAmount = web3.utils.toBN(
+        totalAmount.add(
+          web3.utils.toBN(result.data.drop_info.total_drop_amount)
+        )
+      );
+      totalAmount = web3.utils.toBN(
+        totalAmount.add(
+          web3.utils.toBN(
+            ethServer.getLocalFisReward(result.data.drop_info.tx_list)
+          )
+        )
+      );
+
+      let totalDropReward = web3.utils.fromWei(totalAmount, "ether");
+      dispatch(
+        setTotalDropReward(NumberUtil.handleAmountToFixed3(totalDropReward))
+      );
     } else {
       dispatch(setTotalDropReward(NumberUtil.handleAmountToFixed3(0)));
     }
@@ -717,8 +733,15 @@ export const send =
       dispatch(setLoading(false));
       // console.log("send result: ", JSON.stringify(result));
       if (result && result.status) {
-        message.success("Deposit successfully");
         ethServer.recordREthStake(address, result.transactionHash);
+        if (getState().rETHModule.dropIsOpen) {
+          ethServer.recordTxHashInLocal(
+            result.transactionHash,
+            result.blockHash,
+            amount
+          );
+        }
+        message.success("Deposit successfully");
         cb && cb();
       } else {
         message.error("Error! Please try again");

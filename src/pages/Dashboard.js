@@ -190,7 +190,7 @@ export default function Dashboard() {
               top={getRem(40)}
               right={getRem(60)}
             >
-              Reward can be claimed every 10:00 UTC+8
+              Reward can be claimed every 2:00 AM UTC
             </Text>
 
             <SmallButton

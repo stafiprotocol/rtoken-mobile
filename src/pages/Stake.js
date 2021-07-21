@@ -30,6 +30,7 @@ export default function Stake() {
     // fisApy,
     ratio,
     ethAccountAddress,
+    dropIsOpen,
     dropRate,
   } = useAppSelector((state) => {
     return {
@@ -41,6 +42,7 @@ export default function Stake() {
       ethApy: state.rETHModule.ethApy,
       fisApy: state.rETHModule.fisApy,
       ratio: state.rETHModule.ratio,
+      dropIsOpen: state.rETHModule.dropIsOpen,
       dropRate: state.rETHModule.dropRate,
       ethAccountAddress:
         state.rETHModule.ethAccount && state.rETHModule.ethAccount.address,
@@ -133,23 +135,29 @@ export default function Stake() {
           {ethApy}
         </Text>
 
-        <Text
-          size={getRem(36)}
-          sameLineHeight
-          color={"#ffffff"}
-          top={getRem(70)}
-        >
-          FIS Reward
-        </Text>
-        <Text
-          bold
-          size={getRem(70)}
-          sameLineHeight
-          color={"#00F3AB"}
-          top={getRem(4)}
-        >
-          {dropRate === "--" ? "--" : dropRateToAmount(stakeAmount, dropRate)}
-        </Text>
+        {dropIsOpen && (
+          <>
+            <Text
+              size={getRem(36)}
+              sameLineHeight
+              color={"#ffffff"}
+              top={getRem(70)}
+            >
+              FIS Reward
+            </Text>
+            <Text
+              bold
+              size={getRem(70)}
+              sameLineHeight
+              color={"#00F3AB"}
+              top={getRem(4)}
+            >
+              {dropRate === "--"
+                ? "--"
+                : dropRateToAmount(stakeAmount, dropRate)}
+            </Text>
+          </>
+        )}
 
         <Text
           size={getRem(36)}
