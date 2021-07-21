@@ -578,9 +578,7 @@ export const getDropInfo = (): AppThunk => async (dispatch, getState) => {
 
       totalAmount = web3.utils.toBN(
         totalAmount.add(
-          web3.utils.toBN(
-            ethServer.getLocalFisReward(result.data.tx_list)
-          )
+          web3.utils.toBN(ethServer.getLocalFisReward(result.data.tx_list))
         )
       );
 
@@ -738,11 +736,14 @@ export const send =
       // console.log("send result: ", JSON.stringify(result));
       if (result && result.status) {
         if (getState().rETHModule.dropIsOpen) {
-          await ethServer.recordStakeTxHashInLocal(
-            result.transactionHash,
-            result.blockHash,
-            amount
-          );
+          await ethServer
+            .recordStakeTxHashInLocal(
+              result.transactionHash,
+              result.blockHash,
+              amount
+            )
+            .then((data) => [null, data])
+            .catch((err) => [err, null]);
         }
         message.success("Deposit successfully");
         cb && cb();
