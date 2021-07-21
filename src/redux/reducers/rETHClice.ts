@@ -631,6 +631,7 @@ export const claimDrop =
       dispatch(setLoading(false));
       if (result && result.status) {
         message.success("Reward is claimed");
+        dispatch(setClaimableDropReward(NumberUtil.handleAmountToFixed3(0)));
         cb && cb();
       } else {
         message.error("Error! Please try again");
