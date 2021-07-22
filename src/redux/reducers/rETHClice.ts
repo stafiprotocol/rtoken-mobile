@@ -602,6 +602,13 @@ export const claimDrop =
     let web3 = ethServer.getWeb3();
     const address = getState().rETHModule.ethAccount.address;
     const contract = ethServer.getDropContract(address);
+
+    const claimOpen = await contract.methods.claimOpen().call();
+    if (!claimOpen) {
+      message.warn("Please wait 5~10 minutes before claiming");
+      return;
+    }
+
     const amount = web3.utils.toWei(
       getState().rETHModule.claimableDropReward.toString()
     );
