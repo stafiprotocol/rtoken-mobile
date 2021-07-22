@@ -180,14 +180,16 @@ export default class Index {
       if (result.data && result.data.drop_rate) {
         let web3 = this.getWeb3();
         let dropRate = web3.utils.fromWei(result.data.drop_rate, "ether");
-        txs.push({
-          txHash,
-          amount: amountInWei,
-          timestamp,
-          dropRate,
-        });
+        if (dropRate > 0) {
+          txs.push({
+            txHash,
+            amount: amountInWei,
+            timestamp,
+            dropRate,
+          });
 
-        localStorage.setItem(LOCAL_STORAGE_STAKE_TXS, JSON.stringify(txs));
+          localStorage.setItem(LOCAL_STORAGE_STAKE_TXS, JSON.stringify(txs));
+        }
       }
     }
   }
